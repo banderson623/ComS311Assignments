@@ -32,10 +32,17 @@ public class IntervalTest implements IScheduler.IInterval {
     }
 
     static void DisplayIntervals(Set<? extends IScheduler.IInterval> intervals){
+        DisplayIntervalsUsingRangeFrom(intervals,intervals);
+    }
+
+    static void DisplayIntervalsUsingRangeFrom(Set<? extends IScheduler.IInterval> intervals,
+                                               Set<? extends IScheduler.IInterval> rangingIntervals){
         int first = Integer.MAX_VALUE;
         int last = -1;
 
-        java.util.Iterator<? extends IScheduler.IInterval> it = intervals.iterator();
+        System.out.println("\n\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
+
+        java.util.Iterator<? extends IScheduler.IInterval> it = rangingIntervals.iterator();
         while(it.hasNext()) {
             IScheduler.IInterval interval = it.next();
             if(interval.getStartTime() < first){
@@ -47,21 +54,30 @@ public class IntervalTest implements IScheduler.IInterval {
             }
         }
 
+//        java.util.Iterator<? extends IScheduler.IInterval> it1 = intervals.iterator();
+//        while(it1.hasNext()) {
+//            IScheduler.IInterval interval = it1.next();
+//            int myStart = interval.getStartTime() - first;
+//            System.out.println(myStart + " to " + (myStart + (interval.getEndTime() - interval.getStartTime())) + "\t("+Integer.toHexString(System.identityHashCode(interval))+")");
+//        }
+
+
         int size = 60;
         int scale = (last - first) / size;
-        System.out.println(first + "                                                      " + last);
+        System.out.println("0                                                            " + (last-first));
         System.out.println("|------------------------------------------------------------|");
 
         java.util.Iterator<? extends IScheduler.IInterval> it2 = intervals.iterator();
         while(it2.hasNext()) {
             IScheduler.IInterval interval = it2.next();
-            // take the start time minus the first and divide by scale
+            // take the start time minus the first and divide by scale       add one because of the '|' char
             int firstDisplay = ((interval.getStartTime() - first)  / scale) + 1;
             int lengthDisplay = (interval.getEndTime() - interval.getStartTime())  / scale;
             for(int j = 0; j < firstDisplay; ++j){System.out.print(" ");}
-//            System.out.print("|");
-            for(int j = 0; j < lengthDisplay; ++j){System.out.print("-");}
-            System.out.println("");
+            System.out.print("[");
+            for(int j = 1; j < lengthDisplay-1; ++j){System.out.print("=");}
+            System.out.println("]");
+//            System.out.println("("+Integer.toHexString(System.identityHashCode(interval))+")");
         }
 
 
@@ -97,7 +113,7 @@ public class IntervalTest implements IScheduler.IInterval {
     }
 
     public String toString(){
-        return "start: " + m_start +  " - end: " + m_end + " duration: " + ((m_end-m_start)/60);
+        return "start: " + m_start +  " - end: " + m_end + " duration: " + ((m_end-m_start)/60) + " ("+Integer.toHexString(System.identityHashCode(this))+")";
     }
 
 }

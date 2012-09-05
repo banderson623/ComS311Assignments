@@ -1,3 +1,6 @@
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -24,6 +27,60 @@ public class Scheduler implements IScheduler{
     @Override
 
     public Set<IInterval> optimalSchedule(Set<IInterval> s) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // The ordered set, no larger than the size of the original set
+        Set<IInterval> theOptimalSet = new HashSet<IInterval>(s.size());
+
+        java.util.Iterator<? extends IInterval> it = s.iterator();
+        if(it.hasNext()){
+
+//            System.out.println("optimalSchedule() s size: " + s.size());
+
+            IInterval interval = it.next();
+            IInterval endingSoonest = interval;
+            if(it.hasNext()){
+                do{
+                    interval = it.next();
+                    if(interval.getEndTime() < endingSoonest.getEndTime()){
+                        endingSoonest = interval;
+                    }
+                } while(it.hasNext());
+            }
+            // add this to optimal set
+            theOptimalSet.add(endingSoonest);
+            // remove the soonest ending interval
+            s.remove(endingSoonest);
+
+            java.util.Iterator<? extends IInterval> iteratorWithPotentialConflicts = s.iterator();
+            int steps = 0;
+            while(iteratorWithPotentialConflicts.hasNext()){
+                ++steps;
+                IInterval intervalToCheck = iteratorWithPotentialConflicts.next();
+
+                if( // contained within (or equal)
+                   (intervalToCheck.getEndTime() <= endingSoonest.getEndTime() &&
+                    intervalToCheck.getStartTime() >= endingSoonest.getStartTime())
+                   || // starts before but ends during or at the same time
+                   (intervalToCheck.getStartTime() <= endingSoonest.getStartTime() &&
+                    intervalToCheck.getEndTime() >= endingSoonest.getStartTime())
+                   || // starts after or at the same time but ends after
+                    (intervalToCheck.getStartTime() >=  endingSoonest.getStartTime() &&
+                     intervalToCheck.getStartTime() <= endingSoonest.getEndTime())
+                   || // starts before and ends after
+                    (intervalToCheck.getStartTime() <= endingSoonest.getStartTime() &&
+                     intervalToCheck.getEndTime() >= endingSoonest.getEndTime())
+                   ){
+
+//                    shouldRemove = true;
+                    iteratorWithPotentialConflicts.remove();
+                }
+
+            }
+
+
+
+            theOptimalSet.addAll(optimalSchedule(s));//new HashSet<IInterval>(s)));
+        }
+
+        return theOptimalSet;
     }
 }
