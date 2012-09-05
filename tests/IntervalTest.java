@@ -1,3 +1,4 @@
+import javax.tools.JavaFileManager;
 import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,11 +32,39 @@ public class IntervalTest implements IScheduler.IInterval {
     }
 
     static void DisplayIntervals(Set<? extends IScheduler.IInterval> intervals){
+        int first = Integer.MAX_VALUE;
+        int last = -1;
+
         java.util.Iterator<? extends IScheduler.IInterval> it = intervals.iterator();
         while(it.hasNext()) {
             IScheduler.IInterval interval = it.next();
-            System.out.println(interval);
+            if(interval.getStartTime() < first){
+                first = interval.getStartTime();
+            }
+
+            if(interval.getEndTime() > last){
+                last = interval.getEndTime();
+            }
         }
+
+        int size = 60;
+        int scale = (last - first) / size;
+        System.out.println(first + "                                                      " + last);
+        System.out.println("|------------------------------------------------------------|");
+
+        java.util.Iterator<? extends IScheduler.IInterval> it2 = intervals.iterator();
+        while(it2.hasNext()) {
+            IScheduler.IInterval interval = it2.next();
+            // take the start time minus the first and divide by scale
+            int firstDisplay = ((interval.getStartTime() - first)  / scale) + 1;
+            int lengthDisplay = (interval.getEndTime() - interval.getStartTime())  / scale;
+            for(int j = 0; j < firstDisplay; ++j){System.out.print(" ");}
+//            System.out.print("|");
+            for(int j = 0; j < lengthDisplay; ++j){System.out.print("-");}
+            System.out.println("");
+        }
+
+
     }
 
     public IntervalTest(){

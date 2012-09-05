@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class main {
     public static void main(String [ ] args){
-        Set<IntervalTest> test = IntervalTest.BuildSetOfLength(5);
+        Set<IntervalTest> test = IntervalTest.BuildSetOfLength(15);
         IntervalTest.DisplayIntervals(test);
     }
 
