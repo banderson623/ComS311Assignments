@@ -8,7 +8,7 @@ import java.util.Set;
  * User: brian_anderson
  * Date: 9/4/12
  * Time: 11:29 PM
- * To change this template use File | Settings | File Templates.
+ * Interval Implementation for testing
  */
 public class IntervalTest implements IScheduler.IInterval {
     int m_start, m_end;
@@ -30,7 +30,15 @@ public class IntervalTest implements IScheduler.IInterval {
         return theSet;
     }
 
-    IntervalTest(){
+    static void DisplayIntervals(Set<? extends IScheduler.IInterval> intervals){
+        java.util.Iterator<? extends IScheduler.IInterval> it = intervals.iterator();
+        while(it.hasNext()) {
+            IScheduler.IInterval interval = it.next();
+            System.out.println(interval);
+        }
+    }
+
+    public IntervalTest(){
         Date now = new Date();
         Long longTime = new Long(now.getTime()/1000);
 
@@ -39,7 +47,7 @@ public class IntervalTest implements IScheduler.IInterval {
     }
 
     // Simple constructor
-    IntervalTest(int start, int end){
+    public IntervalTest(int start, int end){
         if(end < start){
             throw new InvalidParameterException("Start must be before end");
         }
@@ -58,4 +66,9 @@ public class IntervalTest implements IScheduler.IInterval {
     public int getEndTime() {
         return m_end;
     }
+
+    public String toString(){
+        return "start: " + m_start +  " - end: " + m_end + " duration: " + ((m_end-m_start)/60);
+    }
+
 }
