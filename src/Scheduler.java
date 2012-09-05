@@ -1,6 +1,4 @@
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -24,16 +22,14 @@ import java.util.Set;
  * This is the only way this problem will be accepted.
  */
 public class Scheduler implements IScheduler{
-    @Override
 
+    @Override
     public Set<IInterval> optimalSchedule(Set<IInterval> s) {
         // The ordered set, no larger than the size of the original set
         Set<IInterval> theOptimalSet = new HashSet<IInterval>(s.size());
 
         java.util.Iterator<? extends IInterval> it = s.iterator();
         if(it.hasNext()){
-
-//            System.out.println("optimalSchedule() s size: " + s.size());
 
             IInterval interval = it.next();
             IInterval endingSoonest = interval;
@@ -51,9 +47,7 @@ public class Scheduler implements IScheduler{
             s.remove(endingSoonest);
 
             java.util.Iterator<? extends IInterval> iteratorWithPotentialConflicts = s.iterator();
-            int steps = 0;
             while(iteratorWithPotentialConflicts.hasNext()){
-                ++steps;
                 IInterval intervalToCheck = iteratorWithPotentialConflicts.next();
 
                 if( // contained within (or equal)
@@ -69,8 +63,6 @@ public class Scheduler implements IScheduler{
                     (intervalToCheck.getStartTime() <= endingSoonest.getStartTime() &&
                      intervalToCheck.getEndTime() >= endingSoonest.getEndTime())
                    ){
-
-//                    shouldRemove = true;
                     iteratorWithPotentialConflicts.remove();
                 }
 
