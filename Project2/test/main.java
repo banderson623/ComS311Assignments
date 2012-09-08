@@ -13,7 +13,7 @@ public class main {
         Builders<String> builder = new Builders<String>();
 //        builder = new helpers.Builders<String>();
 
-        System.out.println(builder.arrayOfIntegersSizeAndGuarenteeKey(10, "Brian"));
+        System.out.println(builder.listOfIntegersSizeAndGuarenteeKey(10, "Brian"));
     }
 
 }

@@ -22,11 +22,11 @@ public class Builders<T extends Comparable<? super T>> {
     }
 
 
-    public IArrayLookup.Pair<T, Number>[] arrayOfIntegersSizeAndGuarenteeKey(int size, T key){
-        List<IArrayLookup.Pair<T,Number>> pairs = listOfIntegersSizeAndGuarenteeKey(size, key);
-        IArrayLookup.Pair<T,Number>[] result = (IArrayLookup.Pair<T,Number>[])Array.newInstance(IArrayLookup.Pair<T,Number>,pairs.size());
-
-        return result;
-    }
+//    public IArrayLookup.Pair<T, Number>[] arrayOfIntegersSizeAndGuarenteeKey(int size, T key){
+//        List<IArrayLookup.Pair<T,Number>> pairs = listOfIntegersSizeAndGuarenteeKey(size, key);
+//        IArrayLookup.Pair<T,Number>[] result = (IArrayLookup.Pair<T,Number>[])Array.newInstance(IArrayLookup.Pair<T,Number>,pairs.size());
+//
+//        return result;
+//    }
 }
 
