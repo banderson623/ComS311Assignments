@@ -43,8 +43,8 @@ public interface IArrayLookup<T extends Comparable<? super T>, E>  {
         }
 
         @Override
-        public int compareTo(Pair<K, V> arg0) {
-            return key.compareTo(arg0.key);
+        public int compareTo(Pair<K, V> anotherPair) {
+            return key.compareTo(anotherPair.key);
         }
     }
 }
