@@ -18,12 +18,18 @@ public class ArrayLookup implements IArrayLookup {
      * @return
      */
     @Override
-    public Object linearLookup(Pair[] arr, Comparable key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object linearLookup(Pair[] pairs, Comparable key) {
+        int size = pairs.length;
+        for(int i = 0; i < size; ++i){
+            if(pairs[i].key.equals(key)){
+                return pairs[i].value;
+            }
+        }
+        return null;
     }
 
     @Override
-    public Pair[] selectionSort(Pair[] arr) {
+    public Pair[] selectionSort(Pair[] pairs) {
         return new Pair[0];  //To change body of implemented methods use File | Settings | File Templates.
     }
 

@@ -10,10 +10,12 @@ public class main {
     public static void main(String [ ] args){
         System.out.println("Main Test starting");
 
-        Builders<String> builder = new Builders<String>();
+        Builders builder = new Builders();
 //        builder = new helpers.Builders<String>();
 
-        System.out.println(builder.listOfIntegersSizeAndGuarenteeKey(10, "Brian"));
+//        System.out.println(builder.listOfPairsSizeWithGuarenteedKey(10,"Ralph"));
+        System.out.println(builder.arrayOfPairsSizeWithGuarenteedKey(10,"Ralph"));
+//        System.out.println(builder.test()[1]);
     }
 
 }

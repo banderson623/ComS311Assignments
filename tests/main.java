@@ -11,7 +11,7 @@ public class main {
     public static void main(String [ ] args){
         Scheduler s = new Scheduler();
 
-        Set<? extends IScheduler.IInterval> test = IntervalTest.BuildSetOfLength(5);
+        Set<? extends IScheduler.IInterval> test = IntervalTest.BuildSetOfLength(10);
         IntervalTest.DisplayIntervals(test);
 
         Set<IScheduler.IInterval> optimized = s.optimalSchedule((Set<IScheduler.IInterval>)test);

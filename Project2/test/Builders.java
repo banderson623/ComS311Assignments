@@ -10,23 +10,53 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 
-public class Builders<T extends Comparable<? super T>> {
-    public List<IArrayLookup.Pair<T, Number>> listOfIntegersSizeAndGuarenteeKey(int size, T key){
-        List<IArrayLookup.Pair<T,Number>> pairs = new ArrayList<IArrayLookup.Pair<T, Number>>();
+public class Builders {
+
+    public String randomString(int length){
+        String text = "";
+        for(int i = 0; i < length; ++i){
+            text = text + Long.toString((long) Math.ceil(Math.random()*100), 32);
+        }
+//        System.out.println("Created random key: " + text);
+        return text;
+    }
+
+    public List<IArrayLookup.Pair<String, Number>> listOfPairsSizeWithGuarenteedKey(int size, String requiredKey){
+        List<IArrayLookup.Pair<String,Number>> pairs = new ArrayList<IArrayLookup.Pair<String, Number>>();
+
+        int indexForGuaranteedKey = (int) Math.round(Math.random() * size + 1) % size;
 
         for(int i = 0; i < size; i++){
-            pairs.add(new IArrayLookup.Pair<T, Number>(key,Math.round(Math.random()*100)));
+            String key = this.randomString(5);
+
+            if(indexForGuaranteedKey == i){
+                key = requiredKey;
+            }
+            pairs.add(new IArrayLookup.Pair<String, Number>(key,Math.round(Math.random()*100)));
         }
 
         return pairs;
     }
 
+    public IArrayLookup.Pair[] test() {
 
-//    public IArrayLookup.Pair<T, Number>[] arrayOfIntegersSizeAndGuarenteeKey(int size, T key){
-//        List<IArrayLookup.Pair<T,Number>> pairs = listOfIntegersSizeAndGuarenteeKey(size, key);
-//        IArrayLookup.Pair<T,Number>[] result = (IArrayLookup.Pair<T,Number>[])Array.newInstance(IArrayLookup.Pair<T,Number>,pairs.size());
-//
-//        return result;
-//    }
+        IArrayLookup.Pair[] a = new IArrayLookup.Pair[5];
+//        for(int i = 0; i < a.length; i++){
+            a[1] = new IArrayLookup.Pair("Brian",123);
+//        }
+        return a;
+    }
+
+    public IArrayLookup.Pair[] arrayOfPairsSizeWithGuarenteedKey(int size, String key){
+        List<IArrayLookup.Pair<String,Number>> pairs = listOfPairsSizeWithGuarenteedKey(size, key);
+
+        IArrayLookup.Pair[] array = new IArrayLookup.Pair[size];
+
+        for(int i=0; i< array.length; ++i) {
+            array[i] = new IArrayLookup.Pair(pairs.get(i).key,pairs.get(i).value);
+        }
+
+        return array;
+    }
 }
 

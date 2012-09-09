@@ -46,5 +46,10 @@ public interface IArrayLookup<T extends Comparable<? super T>, E>  {
         public int compareTo(Pair<K, V> anotherPair) {
             return key.compareTo(anotherPair.key);
         }
+
+
+        public String toString(){
+            return key + " => " + value;
+        }
     }
 }

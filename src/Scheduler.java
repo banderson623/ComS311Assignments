@@ -68,9 +68,7 @@ public class Scheduler implements IScheduler{
 
             }
 
-
-
-            theOptimalSet.addAll(optimalSchedule(s));//new HashSet<IInterval>(s)));
+            theOptimalSet.addAll(optimalSchedule(s));
         }
 
         return theOptimalSet;
