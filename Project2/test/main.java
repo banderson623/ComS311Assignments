@@ -3,7 +3,9 @@
  * User: brian_anderson
  * Date: 9/7/12
  * Time: 10:05 AM
- * To change this template use File | Settings | File Templates.
+ *
+ * Just used to test the array sorting/finding code
+ *
  */
 public class main {
 
@@ -11,11 +13,16 @@ public class main {
         System.out.println("Main Test starting");
 
         Builders builder = new Builders();
-//        builder = new helpers.Builders<String>();
 
-//        System.out.println(builder.listOfPairsSizeWithGuarenteedKey(10,"Ralph"));
-        System.out.println(builder.arrayOfPairsSizeWithGuarenteedKey(10,"Ralph"));
-//        System.out.println(builder.test()[1]);
+        Timer buildTiming = new Timer();
+        ArrayLookup lookerUpper = new ArrayLookup();
+        IArrayLookup.Pair pairs[] = builder.arrayOfPairsSizeWithGuarenteedKey(1000,"Ralph");
+
+        buildTiming.start();
+        lookerUpper.linearLookup(pairs,"Ralph");
+        buildTiming.stop();
+
+        System.out.println("Building took\n" + buildTiming.report());
     }
 
 }
