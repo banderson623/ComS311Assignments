@@ -11,6 +11,8 @@ public class main {
     public static void main(String [ ] args){
         Scheduler s = new Scheduler();
 
+
+
         Set<? extends IScheduler.IInterval> test = IntervalTest.BuildSetOfLength(10);
         IntervalTest.DisplayIntervals(test);
 

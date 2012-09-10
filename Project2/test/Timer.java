@@ -7,9 +7,15 @@ import java.lang.management.*;
  * Time: 10:37 PM
  * Simple timing class
  */
+//public interface Timerable {
+//    boolean start();
+//    boolean stop();
+//    long getUserTime();
+//}
+
 public class Timer {
     public enum States {
-        RUNNING,READY,ERROR
+        RUNNING,READY,COMPLETED,ERROR
     }
 
     private long startTimeUser;
@@ -23,7 +29,6 @@ public class Timer {
 
     private States state;
     private boolean isCpuTimeSupported;
-
     private ThreadMXBean bean;
 
     Timer(){
@@ -51,19 +56,45 @@ public class Timer {
             stopTimeUser = bean.getCurrentThreadUserTime();
             stopTimeCPU = bean.getCurrentThreadCpuTime();
             stopTimeSystem = bean.getCurrentThreadCpuTime() - bean.getCurrentThreadUserTime();
-            state = States.READY;
+            state = States.COMPLETED;
             result = true;
         }
-
         return result;
     }
 
+    public long getUserTime() {
+        long userTime = 0;
+        if(state == States.COMPLETED){
+            userTime = stopTimeUser - startTimeUser;
+        }
+        return userTime;
+    }
+
     public String report(){
-        String report =    "User Time:   " + (stopTimeUser - startTimeUser) + "ns";
-               report += "\nCPU Time:    " + (stopTimeCPU - startTimeCPU) + "ns";
-               report += "\nSystem Time: " + (stopTimeSystem - startTimeSystem) + "ns (???)";
+        return reportWithIndentation(0);
+    }
+
+    public String reportWithIndentation(int levelOfTabs){
+        String tabs = "";
+        for(int i = 0; i < levelOfTabs; i++){
+            tabs += "  ";
+        }
+
+        String report  = tabs+ "User Time:   " + getUserTime() / 1000 + "ms\n";
+               report += tabs+ "CPU Time:    " + (stopTimeCPU - startTimeCPU) / 1000 + "ms\n";
+               report += tabs+ "System Time: " + (stopTimeSystem - startTimeSystem) / 1000 + "ms (???)\n";
         return report;
     }
+
+    public String toString() {
+        return report();
+    }
+
+    // For comparable interface
+    public int compareTo(Timer otherThing) {
+        return (int) (otherThing.getUserTime() - getUserTime());
+    }
+
 
 
 }
