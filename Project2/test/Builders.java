@@ -15,7 +15,7 @@ public class Builders {
     public String randomString(int length){
         String text = "";
         for(int i = 0; i < length; ++i){
-            text = text + Long.toString((long) Math.ceil(Math.random()*100), 32);
+            text = text + Long.toString((long) Math.ceil(Math.random()*32), 32);
         }
 //        System.out.println("Created random key: " + text);
         return text;
