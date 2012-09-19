@@ -25,6 +25,7 @@ public class Timings {
     public boolean start(String label){
         boolean started = false;
         if(!runningTimers.containsKey(label)){
+            System.out.println("Starting timer for " + label);
             lastLabel.addLast(label);
             Timer timer = new Timer();
             runningTimers.put(label,timer);

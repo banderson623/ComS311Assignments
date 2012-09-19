@@ -30,7 +30,44 @@ public class ArrayLookup implements IArrayLookup {
         return null;
     }
 
-    @Override
+//    function quicksort('array')
+//    if length('array') ≤ 1
+//            return 'array'  // an array of zero or one elements is already sorted
+//    select and remove a pivot value 'pivot' from 'array'
+//    create empty lists 'less' and 'greater'
+//            for each 'x' in 'array'
+//            if 'x' ≤ 'pivot' then append 'x' to 'less'
+//            else append 'x' to 'greater'
+//            return concatenate(quicksort('less'), 'pivot', quicksort('greater')) // two recursive calls
+
+
+    public Pair[] quickSort(Pair[] pairs) {
+        if(pairs.length <= 1){
+            return pairs;
+        } else {
+            Object pivotValue = pairs[(int) Math.floor(pairs.length / 2)].key;
+            Pair[] lowerPairs = new IArrayLookup.Pair[pairs.length];
+            Pair[] upperPairs = new IArrayLookup.Pair[pairs.length];
+            int l_i = 0;
+            int u_i = 0;
+
+            for(int i = 0; i < pairs.length; ++i){
+                int compareToValue = pairs[i].key.compareTo(pivotValue);
+
+                if(compareToValue < 0){
+                    lowerPairs[(l_i++)] = pairs[i];
+                } else {
+                    upperPairs[(u_i++)] = pairs[i];
+                }
+            }
+            // TODO: Return a concatenated version
+            return pairs;
+        }
+
+    }
+
+
+        @Override
     public Pair[] selectionSort(Pair[] pairs) {
 
         for(int outerIndex = 0; outerIndex < pairs.length; ++outerIndex){
@@ -51,6 +88,8 @@ public class ArrayLookup implements IArrayLookup {
             if(smallestPair != outerIndex){
 
 //                System.out.println("Swapping : " + smallestPair + " with " + outerIndex);
+
+                System.out.println( (float)outerIndex / (float)pairs.length);
 
                 Pair tmpPair = pairs[outerIndex];
                 pairs[outerIndex] = pairs[smallestPair];
@@ -96,7 +135,6 @@ public class ArrayLookup implements IArrayLookup {
                 System.out.print("+");
 
                 jumpFactor = (int) Math.ceil(jumpFactor / 2.0);
-                //if(jumpFactor == 0 ){jumpFactor = 1;}
                 midpoint += jumpFactor;
 
             } else {
