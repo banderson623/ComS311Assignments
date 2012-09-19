@@ -8,7 +8,7 @@ import java.util.Set;
  * User: brian_anderson
  * Date: 9/10/12
  * Time: 9:29 AM
- * Handle timing things
+ * Handle timing things, and another comment
  */
 public class Timings {
     private HashMap<String,Timer> runningTimers;
