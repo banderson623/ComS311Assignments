@@ -23,9 +23,10 @@ public class main {
 
         Builders builder = new Builders();
         Timings timers = new Timings();
+        Quicksort sorter = new Quicksort();
 
         ArrayLookup lookerUpper = new ArrayLookup();
-        IArrayLookup.Pair pairs[] = builder.arrayOfPairsSizeWithGuarenteedKey(200,"Ralph");
+        IArrayLookup.Pair pairs[] = builder.arrayOfPairsSizeWithGuarenteedKey(1000000,"Ralph");
 
         timers.start("Linear look up of " + pairs.length);
         lookerUpper.linearLookup(pairs,"Ralph");
@@ -33,9 +34,15 @@ public class main {
 
 
 //        printPairs(pairs);
-        timers.start("Sorting " + pairs.length);
-        IArrayLookup.Pair sortedPairs[] = lookerUpper.selectionSort(pairs);
+        timers.start("Quick Sorting " + pairs.length);
+            IArrayLookup.Pair[] sortedPairs = sorter.sort(pairs);
         timers.stop();
+
+        if(pairs.length <= 10000){
+            timers.start("Selection Sort " + pairs.length);
+                lookerUpper.selectionSort(pairs);
+            timers.stop();
+        }
 
 //        printPairs(sortedPairs);
 
