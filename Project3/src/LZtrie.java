@@ -24,9 +24,34 @@ public class LZtrie implements ILZ {
             rootNode = new TrieNode();
         }
 
-        public class TrieNode {
-
+        public boolean addString(String onlyOfOnesAndZeros){
+            return rootNode.addString(onlyOfOnesAndZeros);
         }
+
+        public class TrieNode {
+            private TrieNode parent;
+            private TrieNode left;
+            private TrieNode right;
+
+            public TrieNode(){
+                parent =    null;
+                left =      null;
+                right =     null;
+            }
+
+            /**
+             * Adds a string to this node, which will recursively call down
+             * and add nodes as needed
+             *
+             * @param onlyOfOnesAndZeros is a string of something like "0101001"
+             * @return
+             */
+            public boolean addString(String onlyOfOnesAndZeros){
+                return true;
+            }
+        }
+
+
 
     }
 
