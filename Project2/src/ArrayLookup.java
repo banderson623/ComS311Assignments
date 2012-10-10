@@ -22,42 +22,17 @@ public class ArrayLookup implements IArrayLookup {
         int size = pairs.length;
         for(int i = 0; i < size; ++i){
             if(pairs[i].key.equals(key)){
-                System.out.println("\nloops: " + i);
-
                 return pairs[i].value;
             }
         }
         return null;
     }
 
-
-    public void displayPercentSorted(double percentFromZeroToOne){
-        int length = 120;
-        if(percentFromZeroToOne > 1.0){
-            percentFromZeroToOne = percentFromZeroToOne / (double) length;
-        }
-        int at = (int) Math.ceil(percentFromZeroToOne * (double) length);
-
-        System.out.print("[");
-        for(int i = 0; i < at; ++i){
-            System.out.print("*");
-        }
-        System.out.print("*");
-
-        for(int i = at; i < length; ++i){
-            System.out.print("-");
-        }
-        System.out.println("]");
-
-    }
-
-        @Override
+    @Override
     public Pair[] selectionSort(Pair[] pairs) {
 
         for(int outerIndex = 0; outerIndex < pairs.length; ++outerIndex){
             int smallestPair = outerIndex;
-
-            //displayPercentSorted( (float)outerIndex / (float)pairs.length ) ;
 
             for(int innerIndex = outerIndex + 1;
                     innerIndex < pairs.length;
@@ -96,22 +71,16 @@ public class ArrayLookup implements IArrayLookup {
         int jumpFactor = midpoint;
         int loops = 0;
 
-        //System.out.print("\n" + pairs.length + "=>");
-
         while(!found && loops <= pairs.length){
-            //System.out.print("["+midpoint + "|" + jumpFactor + "]");
-            ++loops;
 
             int comparisonResult = pairs[midpoint].key.compareTo(key);
 
             if(comparisonResult > 0){
-                //System.out.print("-");
 
                 jumpFactor = (int) Math.ceil(jumpFactor / 2.0);
                 midpoint -= jumpFactor;
 
             } else if(comparisonResult < 0) {
-                //System.out.print("+");
 
                 jumpFactor = (int) Math.ceil(jumpFactor / 2.0);
                 midpoint += jumpFactor;
@@ -120,8 +89,6 @@ public class ArrayLookup implements IArrayLookup {
                 found = true;
             }
         }
-
-        System.out.println("\nloops: " + loops);
 
         return pairs[midpoint].value;
     }

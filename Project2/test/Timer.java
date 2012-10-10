@@ -1,12 +1,6 @@
 import java.lang.management.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: brian_anderson
- * Date: 9/8/12
- * Time: 10:37 PM
- * Simple timing class
- */
+
 //public interface Timerable {
 //    boolean start();
 //    boolean stop();
@@ -82,8 +76,18 @@ public class Timer {
 
         String report  = tabs+ "User Time:   " + getUserTime() / 1000 + "ms\n";
                report += tabs+ "CPU Time:    " + (stopTimeCPU - startTimeCPU) / 1000 + "ms\n";
-               report += tabs+ "System Time: " + (stopTimeSystem - startTimeSystem) / 1000 + "ms (???)\n";
+               report += tabs+ "System Time: " + (stopTimeSystem - startTimeSystem) / 1000 + "ms\n";
         return report;
+    }
+
+    // Returns a three element array: userTime, cpuTime, systemTime
+    public String[] valuesAsStringArray(){
+        String[] result = new String[3];
+        result[2] = (getUserTime() / 1000) + "";
+        result[1] = ((stopTimeCPU - startTimeCPU)) + "";
+        result[0] = ((stopTimeSystem - startTimeSystem)) + "";
+
+        return result;
     }
 
     public String toString() {

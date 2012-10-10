@@ -52,6 +52,7 @@ public class Timings {
         return stopped;
     }
 
+
     public boolean stop(){
         boolean wasStopped = false;
         if(lastLabel.size() > 0){
@@ -72,6 +73,7 @@ public class Timings {
         report += "\n";
         return report;
     }
+
 
     public String toString(){
         return report();
