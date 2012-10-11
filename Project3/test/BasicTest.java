@@ -111,6 +111,7 @@ public class BasicTest {
 
     public static void testEncodingLZTrie(){
         LZtrie lzt = new LZtrie();
+        Log.off();
         String input = "010011110110101110011";
         String output = "00 01 010 101 1000 1011 0011 1010 0100";
         String encoded = lzt.encode(input);

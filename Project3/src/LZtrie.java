@@ -41,13 +41,19 @@ public class LZtrie implements ILZ {
             }
 
             String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
-            System.out.format("Added a new section: Li: %3d, Ri: %3d > %s%n",leftIndex,(leftIndex + rightMoved),uncompressed.substring(leftIndex,(leftIndex + rightMoved)));
+            int indexOfString = -1;
+            if(!isLastChunk){
+                indexOfString = trie.indexOfString(addChunk);
+            }
+            System.out.format("Added a new section: Li: %3d, Ri: %3d, index: %3d > %s%n",leftIndex,(leftIndex + rightMoved),indexOfString,addChunk);
             encoded += " " + addChunk;
 
             if(isLastChunk){
                 trie.addString(addChunk);
                 leftIndex = uncompressed.length()-1;
             }
+
+
 
         }
 
@@ -70,12 +76,16 @@ public class LZtrie implements ILZ {
          */
         private TrieNode rootNode;
 
+        private int atIndex;
+
         /** Just to get things started */
         public Trie()
         {
             Log l = new Log("Trie::Trie");
             l.log("Instantiated");
+            atIndex = 0;
             rootNode = new TrieNode();
+            rootNode.index = atIndex;
         }
 
         /**
@@ -87,13 +97,27 @@ public class LZtrie implements ILZ {
         {
             Log l = new Log("Trie::addString");
             l.log("Adding String \"" + ofOnlyOnesAndZeros + "\"");
-            return rootNode.addString(ofOnlyOnesAndZeros);
+            int newIndex = rootNode.addString(ofOnlyOnesAndZeros,atIndex);
+            boolean wasAdded = false;
+            if(newIndex != atIndex)
+            {
+                l.log("Index now at: " + newIndex);
+                atIndex = newIndex;
+                wasAdded = true;
+            }
+            return wasAdded;
         }
 
         public boolean doesContainString(String ofOnlyOnesAndZeros)
         {
             Log l = new Log("Trie::containsString");
             return rootNode.doesContainString(ofOnlyOnesAndZeros);
+        }
+
+        public int indexOfString(String ofOnlyOnesAndZeros)
+        {
+            Log l = new Log("Trie::indexOfString");
+            return rootNode.indexOfString(ofOnlyOnesAndZeros);
         }
 
         /**
@@ -111,6 +135,9 @@ public class LZtrie implements ILZ {
             /* The right subtree of the node (1's) */
             private TrieNode right;
 
+            /* the index in the dictionary */
+            private int index;
+
             /**
              * Simple constructor, sets up the node in a
              * default/empty state
@@ -121,6 +148,7 @@ public class LZtrie implements ILZ {
                 l.log("Instantiated");
                 left =      null;
                 right =     null;
+                index =     0;
             }
 
             /**
@@ -130,11 +158,12 @@ public class LZtrie implements ILZ {
              * @param onlyOfOnesAndZeros is a string of something like "0101001"
              * @return
              */
-            public boolean addString(String onlyOfOnesAndZeros)
+            public int addString(String onlyOfOnesAndZeros, int withIndex)
             {
                 Log l = new Log("TrieNode::addString");
+                l.log("Starting at index: " + withIndex);
                 l.changeIndent(Log.MORE);
-                boolean addWasNecessary = false;
+//                int newIndex = -1;
 
                 l.log(onlyOfOnesAndZeros);
                 if(onlyOfOnesAndZeros.length() > 0)
@@ -150,12 +179,14 @@ public class LZtrie implements ILZ {
                         // thing remaining to add, if there is and left is NOT null
                         // we are not adding.
                         if(left != null && onlyOfOnesAndZeros.length() == 1){
-                            addWasNecessary = false;
+                            //addWasNecessary = false;
                         } else {
-                            if(left == null){
+                            if(left == null)
+                            {
                                 left = new TrieNode();
+                                left.index = withIndex++;
                             }
-                            addWasNecessary = left.addString(onlyOfOnesAndZeros.substring(1));
+                            withIndex = left.addString(onlyOfOnesAndZeros.substring(1), withIndex);
                         }
                     }
                     else if(firstCharacter == '1')
@@ -167,10 +198,14 @@ public class LZtrie implements ILZ {
                         // thing remaining to add, if there is and right is NOT null
                         // we are not adding.
                         if(right != null && onlyOfOnesAndZeros.length() == 1){
-                            addWasNecessary = false;
+                            //addWasNecessary = false;
                         } else {
-                            if(right == null) right = new TrieNode();
-                            addWasNecessary = right.addString(onlyOfOnesAndZeros.substring(1));
+                            if(right == null)
+                            {
+                                right = new TrieNode();
+                                right.index = withIndex++;
+                            }
+                            withIndex = right.addString(onlyOfOnesAndZeros.substring(1),withIndex);
                         }
                     }
                     else
@@ -179,11 +214,11 @@ public class LZtrie implements ILZ {
                     }
                 } else {
                     l.log("empty string");
-                    addWasNecessary = true;
+                    //addWasNecessary = true;
                 }
-                l.log("Returning with addWasNecessary: " + addWasNecessary);
+                l.log("Returning with withIndex: " + withIndex);
                 l.changeIndent(Log.LESS);
-                return addWasNecessary;
+                return withIndex;
 
             }
 
@@ -242,8 +277,59 @@ public class LZtrie implements ILZ {
                 return wasFound;
             }
 
+            public int indexOfString(String ofOnlyOnesAndZeros)
+            {
+                int indexOfFound = -1;
+                Log l = new Log("TrieNode::indexOfString");
+                l.changeIndent(Log.MORE);
+                l.log(ofOnlyOnesAndZeros);
+                if(ofOnlyOnesAndZeros.length() == 0)
+                {
+                    // Found, we are in a real node and the string is empty.
+                    indexOfFound = index;
+                }
+                else
+                {
+                    // Get the first character from the string
+                    char firstCharacter = ofOnlyOnesAndZeros.charAt(0);
+                    l.log("Checking '" + firstCharacter + "'");
+                    if(firstCharacter == '0')
+                    {
+                        // goes to left child
+                        l.log("left");
+                        if(left != null)
+                        {
+                            indexOfFound = left.indexOfString(ofOnlyOnesAndZeros.substring(1));
+                        } else {
+                            indexOfFound = -1;
+                        }
+                    }
+                    else if(firstCharacter == '1')
+                    {
+                        // goes to right child
+                        l.log("right");
+                        if(right != null)
+                        {
+                            indexOfFound = right.indexOfString(ofOnlyOnesAndZeros.substring(1));
+                        } else {
+                            indexOfFound = -1;
+                        }
+                    }
+                    else
+                    {
+                        l.log("Not an error, just dumb");
+                        indexOfFound = -1;
+                    }
+                }
+                l.log("Returning with indexOfFound: " + indexOfFound);
+                l.changeIndent(Log.LESS);
+                return indexOfFound;
+            }
+
         } // TrieNode
     }
+
+
 
 
 }
