@@ -20,35 +20,65 @@ public class LZtrie implements ILZ {
     /**
      * Todo: Remove this before submission, just for testing
      */
-    public Trie trieFactory(){
+    public Trie trieFactory()
+    {
+        Log l = new Log("Trie::trieFactory"); l.log("Factorizing");
         return new Trie();
     }
 
-    public class Trie {
+    public class Trie
+    {
         private TrieNode rootNode;
 
         /** Just to get things started */
-        public Trie(){
+        public Trie()
+        {
             Log l = new Log("Trie::Trie");
             l.log("Instantiated");
             rootNode = new TrieNode();
         }
 
-        public boolean addString(String onlyOfOnesAndZeros){
+        /**
+         * Adds a string to the Trie tree
+         * @param ofOnlyOnesAndZeros is a string of only ones and zeros
+         * @return if the item was added or not
+         */
+        public boolean addString(String ofOnlyOnesAndZeros)
+        {
             Log l = new Log("Trie::addString");
-            l.log("Adding String \"" + onlyOfOnesAndZeros + "\"");
-            return rootNode.addString(onlyOfOnesAndZeros);
+            l.log("Adding String \"" + ofOnlyOnesAndZeros + "\"");
+            return rootNode.addString(ofOnlyOnesAndZeros);
         }
 
-        public class TrieNode {
-            //private TrieNode parent;
+        public boolean doesContainString(String ofOnlyOnesAndZeros)
+        {
+            Log l = new Log("Trie::containsString");
+            return rootNode.doesContainString(ofOnlyOnesAndZeros);
+        }
+
+        /**
+         * An individual node in the Trie Tree
+         * Contains nodes to the left and right
+         *
+         * Left nodes contain substrings starting with 0's,
+         * Right nodes contain substrings starting with 1's,
+         */
+        public class TrieNode
+        {
+            /* The left subtree of the node (0's) */
             private TrieNode left;
+
+            /* The right subtree of the node (1's) */
             private TrieNode right;
 
-            public TrieNode(){
+            /**
+             * Simple constructor, sets up the node in a
+             * default/empty state
+             */
+            public TrieNode()
+            {
                 Log l = new Log("TrieNode::TrieNode");
                 l.log("Instantiated");
-                //parent =    null;
                 left =      null;
                 right =     null;
             }
@@ -60,34 +90,119 @@ public class LZtrie implements ILZ {
              * @param onlyOfOnesAndZeros is a string of something like "0101001"
              * @return
              */
-            public boolean addString(String onlyOfOnesAndZeros){
+            public boolean addString(String onlyOfOnesAndZeros)
+            {
                 Log l = new Log("TrieNode::addString");
+                l.changeIndent(Log.MORE);
+                boolean addWasNecessary = false;
+
                 l.log(onlyOfOnesAndZeros);
-                if(onlyOfOnesAndZeros.length() > 0){
-                    char value = onlyOfOnesAndZeros.charAt(0);
-                    l.log("Adding/Checking '" + value + "'");
-                    if(value == '0'){
+                if(onlyOfOnesAndZeros.length() > 0)
+                {
+                    char firstCharacter = onlyOfOnesAndZeros.charAt(0);
+                    l.log("Adding/Checking '" + firstCharacter + "'");
+                    if(firstCharacter == '0')
+                    {
                         // goes to left child
                         l.log("left");
-                        if(left == null) left = new TrieNode();
-                        return left.addString(onlyOfOnesAndZeros.substring(1));
-                    } else if(value == '1') {
+
+                        // at this point I need to check if there is only one
+                        // thing remaining to add, if there is and left is NOT null
+                        // we are not adding.
+                        if(left != null && onlyOfOnesAndZeros.length() == 1){
+                            addWasNecessary = false;
+                        } else {
+                            if(left == null){
+                                left = new TrieNode();
+                            }
+                            addWasNecessary = left.addString(onlyOfOnesAndZeros.substring(1));
+                        }
+                    }
+                    else if(firstCharacter == '1')
+                    {
                         // goes to right child
                         l.log("right");
-                        if(right == null) right = new TrieNode();
-                        return right.addString(onlyOfOnesAndZeros.substring(1));
-                    } else {
+
+                        // at this point I need to check if there is only one
+                        // thing remaining to add, if there is and right is NOT null
+                        // we are not adding.
+                        if(right != null && onlyOfOnesAndZeros.length() == 1){
+                            addWasNecessary = false;
+                        } else {
+                            if(right == null) right = new TrieNode();
+                            addWasNecessary = right.addString(onlyOfOnesAndZeros.substring(1));
+                        }
+                    }
+                    else
+                    {
                         throw new InternalError("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
                     }
                 } else {
                     l.log("empty string");
-                    return false;
+                    addWasNecessary = true;
                 }
+                l.log("Returning with addWasNecessary: " + addWasNecessary);
+                l.changeIndent(Log.LESS);
+                return addWasNecessary;
+
             }
-        }
 
+            /**
+             * Will check if the string is contained below in the Trie-tree
+             * @param ofOnlyOnesAndZeros A string of 1010
+             * @return true if the string is stored in the trie
+             */
+            public boolean doesContainString(String ofOnlyOnesAndZeros)
+            {
+                boolean wasFound = false;
+                Log l = new Log("TrieNode::doesContainString");
+                l.changeIndent(Log.MORE);
+                l.log(ofOnlyOnesAndZeros);
+                if(ofOnlyOnesAndZeros.length() == 0)
+                {
+                    // Found, we are in a real node and the string is empty.
+                    wasFound = true;
+                }
+                else
+                {
+                    // Get the first character from the string
+                    char firstCharacter = ofOnlyOnesAndZeros.charAt(0);
+                    l.log("Checking '" + firstCharacter + "'");
+                    if(firstCharacter == '0')
+                    {
+                        // goes to left child
+                        l.log("left");
+                        if(left != null)
+                        {
+                            wasFound = left.doesContainString(ofOnlyOnesAndZeros.substring(1));
+                        } else {
+                            wasFound = false;
+                        }
+                    }
+                    else if(firstCharacter == '1')
+                    {
+                        // goes to right child
+                        l.log("right");
+                        if(right != null)
+                        {
+                            wasFound = right.doesContainString(ofOnlyOnesAndZeros.substring(1));
+                        } else {
+                            wasFound = false;
+                        }
+                    }
+                    else
+                    {
+                        //throw new InternalError("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
+                        l.log("Not an error, just dumb");
+                        wasFound = false;
+                    }
+                }
+                l.log("Returning with Wasfound: " + wasFound);
+                l.changeIndent(Log.LESS);
+                return wasFound;
+            }
 
-
+        } // TrieNode
     }
 
 
