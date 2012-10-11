@@ -6,13 +6,14 @@ public class BasicTest {
 
     public static void main(String [ ] args){
         System.out.println("Hello world, this is Assignment 3");
-        Log.on();
+        Log.off();
         trieTest();
         trieDoubleAddTest();
         trieTestShouldError();
         trieShouldBeAbleToFindThings();
         trieShouldOnlyFindThingsThatItHas();
-
+//        testSimpleLZAdding();
+        testEncodingLZTrie();
     }
 
     public static void trieTest()
@@ -64,6 +65,12 @@ public class BasicTest {
         } else {
             System.out.println("Trie can find");
         }
+        // shouldn't find this
+        if(t.doesContainString(toTryOnTrieHaHa.substring(2))) {
+            System.out.println("FAIL - Should contain " + toTryOnTrieHaHa.substring(2));
+        } else {
+            System.out.println("Trie can find");
+        }
     }
 
     public static void trieShouldOnlyFindThingsThatItHas()
@@ -78,6 +85,38 @@ public class BasicTest {
         } else {
             System.out.println("Trie can find");
         }
+
+    }
+
+
+    public static void testSimpleLZAdding()
+    {
+        LZtrie lzt = new LZtrie();
+        lzt.encode("01001010100100001001010111");
+        Log.on(); Log.separator(); Log.off();
+
+        String enc = lzt.encode("00101010101010101");
+        System.out.println("\n\n                 0 01 010 1 0101 010101");
+        System.out.println("Encoded version: " + enc);
+
+
+        Log.on(); Log.separator(); Log.off();
+        System.out.println("000000000000000000 is parsed as 0 00 000 0000 00000 000");
+        String encoded = lzt.encode("000000000000000000");
+
+        System.out.println("\n\n                 0 00 000 0000 00000 000");
+        System.out.println("Encoded version: " + encoded);
+
+    }
+
+    public static void testEncodingLZTrie(){
+        LZtrie lzt = new LZtrie();
+        String input = "010011110110101110011";
+        String output = "00 01 010 101 1000 1011 0011 1010 0100";
+        String encoded = lzt.encode(input);
+
+        System.out.println("\n\n                 0 1 00 11 110 1101 01 1100 11");
+        System.out.println("Encoded version: " + encoded);
 
     }
 

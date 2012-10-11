@@ -11,10 +11,47 @@
  *
  */
 public class LZtrie implements ILZ {
+    private Trie trie;
 
     @Override
-    public String encode(String uncompressed) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String encode(String uncompressed)
+    {
+        trie = new Trie();
+        System.out.println("Encoding: " + uncompressed);
+        String encoded = "0";
+        int leftIndex = 0;
+        int rightMoved = 1;
+
+        trie.addString(uncompressed.substring(leftIndex,leftIndex+rightMoved));
+        while(leftIndex < uncompressed.length() - 1){
+            leftIndex = leftIndex + rightMoved;
+            rightMoved = 1;
+            // while it is unable to add the new substring, keep advancing the right index by one
+            // until we get a new set of undiscovered substring
+            boolean isLastChunk = false;
+
+            while(!isLastChunk && !trie.addString(uncompressed.substring(leftIndex, leftIndex + rightMoved)))
+            {
+                rightMoved++;
+
+                if((leftIndex + rightMoved) >= uncompressed.length() - 1){
+                    isLastChunk = true;
+                    rightMoved = uncompressed.length() - leftIndex;
+                }
+            }
+
+            String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
+            System.out.format("Added a new section: Li: %3d, Ri: %3d > %s%n",leftIndex,(leftIndex + rightMoved),uncompressed.substring(leftIndex,(leftIndex + rightMoved)));
+            encoded += " " + addChunk;
+
+            if(isLastChunk){
+                trie.addString(addChunk);
+                leftIndex = uncompressed.length()-1;
+            }
+
+        }
+
+        return encoded;
     }
 
     /**
@@ -28,6 +65,9 @@ public class LZtrie implements ILZ {
 
     public class Trie
     {
+        /**
+         * Top level trie node, initialized when the class is instantiated.
+         */
         private TrieNode rootNode;
 
         /** Just to get things started */
