@@ -24,7 +24,7 @@ public class LZtrie implements ILZ {
         String encoded = "";
         int leftIndex = 0;
         int rightMoved = 0;
-        String encodingChunkSeparator = " ";
+        String encodingChunkSeparator = "";
 
         trie.addString(uncompressed.substring(leftIndex,leftIndex+rightMoved));
         while(leftIndex < uncompressed.length() - 1){

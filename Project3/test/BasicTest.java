@@ -114,10 +114,10 @@ public class BasicTest {
         LZtrie lzt = new LZtrie();
         Log.off();
         String input = "010011110110101110011";
-        String output = "00 01 010 101 1000 1011 0011 1010 0100";
+        String output = "00 01 010 101 1000 1011 0011 1010 0100".replace(" ", "");
         String encoded = lzt.encode(input);
 
-        System.out.println("\n\n                  " + output);
+        System.out.println("\n\n                 " + output);
         System.out.println("Encoded version: " + encoded);
 
     }
@@ -125,10 +125,10 @@ public class BasicTest {
         LZtrie lzt = new LZtrie();
         Log.off();
         String input = "00000000000000000000000000000000000000000000000000";
-        String output = "00 10 100 110 1000 1010 1100 1110 10000 0101";
+        String output = "00 10 100 110 1000 1010 1100 1110 10000 0101".replace(" ", "");
         String encoded = lzt.encode(input);
 
-        System.out.println("\n\n                  " + output);
+        System.out.println("\n\n                 " + output);
         System.out.println("Encoded version: " + encoded);
 
     }
