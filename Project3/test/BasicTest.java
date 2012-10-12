@@ -185,26 +185,26 @@ public class BasicTest {
     }
 
     private static void testSimpleEncoderDecoder(){
-        ILZ lz = new LZhash();
-        String testString = "";
-        for(int i = 0; i < 10; ++i){
+        ILZ lz = new LZtrie();
+        String testString = "01";
+        for(int i = 0; i < 15; ++i){
             testString += ((Math.random() > 0.5) ? "1" : "0");
-//            testString += "1";
+            System.out.println("Number of digits: " + testString.length());
             String encoded = lz.encode(testString);
             System.out.println("Encoding: " + testString + " --> " + encoded);
             try {
                 String decodedTestString = LZDecoder.decode(encoded);
                 System.out.println("Decoding: " + decodedTestString);
                 if(!testString.equals(decodedTestString)){
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
     //                return;
                 } else {
                     System.out.println("...............................................................Passed");
                 }
             } catch(IndexOutOfBoundsException err) {
-                System.out.println("   oops " + err);
+                System.out.println("************************************************oops " + err);
             } catch(IllegalArgumentException err) {
-                System.out.println("   oops " + err);
+                System.out.println("************************************************oops  " + err);
             }
 
         }
