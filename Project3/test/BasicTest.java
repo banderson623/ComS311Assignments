@@ -116,7 +116,8 @@ public class BasicTest {
         String output = "00 01 010 101 1000 1011 0011 1010 0100";
         String encoded = lzt.encode(input);
 
-        System.out.println("\n\n                 0 1 00 11 110 1101 01 1100 11");
+//        System.out.println("\n\n                 0 1 00 11 110 1101 01 1100 11");
+        System.out.println("\n\n                  " + output);
         System.out.println("Encoded version: " + encoded);
 
     }

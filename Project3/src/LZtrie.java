@@ -14,13 +14,19 @@ public class LZtrie implements ILZ {
     private Trie trie;
 
     @Override
+    /**
+     * Uncompressed string must contain only 1 and 0's
+     * @returns encoded string
+     */
     public String encode(String uncompressed)
     {
         trie = new Trie();
-        System.out.println("Encoding: " + uncompressed);
-        String encoded = "0";
+//        trie.addString("0");
+//        trie.addString("1");
+        System.out.println("Going to Encode, Uncompressed: " + uncompressed);
+        String encoded = "";
         int leftIndex = 0;
-        int rightMoved = 1;
+        int rightMoved = 0;
 
         trie.addString(uncompressed.substring(leftIndex,leftIndex+rightMoved));
         while(leftIndex < uncompressed.length() - 1){
@@ -41,12 +47,39 @@ public class LZtrie implements ILZ {
             }
 
             String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
-            int indexOfString = -1;
+            int indexOfPreviousString = -1;
             if(!isLastChunk){
-                indexOfString = trie.indexOfString(addChunk);
+                // Need to get the index of the chunk minus the last digit
+                /**
+                 * Informally, to determine the codeword for the (n+1)th phrase p,
+                 * find the dictionary index (order of addition to the dictionary)
+                 * of the one-bit-shorter phrase that p extends, represent that integer in
+                 * binary using (log2 n rounded up), and add the final bit
+                 * of p to the end of that. Then add the new phrase to the dictionary and repeat.
+                 */
+//                Log.on();
+                Log.debug(addChunk + " Finding index of: '" + addChunk.substring(0,addChunk.length()-1) + "'");
+//                Log.off();
+
+                indexOfPreviousString = trie.indexOfString(addChunk.substring(0,addChunk.length()-1));
+                String correctlyPaddedBinaryString = Integer.toBinaryString(indexOfPreviousString);
+                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt())); // Log base 2 of the max index size
+                correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",correctlyPaddedBinaryString).replace(' ', '0');
+//                Log.on();
+                    Log.debug("\tFound: '" + indexOfPreviousString + "'" + " adding the final bit of p: " + addChunk.substring(addChunk.length()-1));
+                    Log.debug("\tPadded String: " + correctlyPaddedBinaryString);
+//                Log.off();
+
+                String newValue = correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);
+//                trie.addString(newValue);
+
+                encoded += " " + newValue;
+
+                Log.on();Log.debug("\tEncoding: '" + encoded); Log.off();
+//                indexOfString = trie.indexOfString(addChunk);
             }
-            System.out.format("Added a new section: Li: %3d, Ri: %3d, index: %3d > %s%n",leftIndex,(leftIndex + rightMoved),indexOfString,addChunk);
-            encoded += " " + addChunk;
+//            System.out.format("Added a new section: Li: %3d, Ri: %3d, index: %3d > %s%n",leftIndex,(leftIndex + rightMoved),indexOfString,addChunk);
+            //encoded += " " + addChunk;
 
             if(isLastChunk){
                 trie.addString(addChunk);
@@ -83,9 +116,14 @@ public class LZtrie implements ILZ {
         {
             Log l = new Log("Trie::Trie");
             l.log("Instantiated");
-            atIndex = 0;
+            atIndex = 1;
             rootNode = new TrieNode();
             rootNode.index = atIndex;
+        }
+
+        public int getMaxIndexAt()
+        {
+            return atIndex;
         }
 
         /**
@@ -117,7 +155,11 @@ public class LZtrie implements ILZ {
         public int indexOfString(String ofOnlyOnesAndZeros)
         {
             Log l = new Log("Trie::indexOfString");
-            return rootNode.indexOfString(ofOnlyOnesAndZeros);
+            if(ofOnlyOnesAndZeros.length() == 0){
+                return 0;
+            } else {
+                return rootNode.indexOfString(ofOnlyOnesAndZeros);
+            }
         }
 
         /**
