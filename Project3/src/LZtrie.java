@@ -21,12 +21,10 @@ public class LZtrie implements ILZ {
     public String encode(String uncompressed)
     {
         trie = new Trie();
-//        trie.addString("0");
-//        trie.addString("1");
-        System.out.println("Going to Encode, Uncompressed: " + uncompressed);
         String encoded = "";
         int leftIndex = 0;
         int rightMoved = 0;
+        String encodingChunkSeparator = " ";
 
         trie.addString(uncompressed.substring(leftIndex,leftIndex+rightMoved));
         while(leftIndex < uncompressed.length() - 1){
@@ -48,6 +46,31 @@ public class LZtrie implements ILZ {
 
             String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
             int indexOfPreviousString = -1;
+
+            if(isLastChunk){
+                trie.addString(addChunk);
+
+                /**
+                 * If the final phrase has occurred before (the most likely scenario for most input strings),
+                 * then do not output its final bit as part of the codeword; simply output its index.
+                 */
+                indexOfPreviousString = trie.indexOfString(addChunk);
+                if(indexOfPreviousString > -1){
+                    // nothing to do here
+                } else {
+                    indexOfPreviousString = trie.indexOfString(addChunk.substring(0,addChunk.length()-1));
+                }
+
+                // Log base 2 of the max index size
+                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt()))+1; // Log base 2 of the max index size
+                // Left pad with zeros accordingly
+                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+                // Add to encoding
+                encoded += encodingChunkSeparator + correctlyPaddedBinaryString;// addChunk.substring(addChunk.length()-1);
+                // Move left index appropriately to denote done state
+                leftIndex = uncompressed.length()-1;
+            }
+
             if(!isLastChunk){
                 // Need to get the index of the chunk minus the last digit
                 /**
@@ -57,39 +80,16 @@ public class LZtrie implements ILZ {
                  * binary using (log2 n rounded up), and add the final bit
                  * of p to the end of that. Then add the new phrase to the dictionary and repeat.
                  */
-//                Log.on();
-                Log.debug(addChunk + " Finding index of: '" + addChunk.substring(0,addChunk.length()-1) + "'");
-//                Log.off();
-
                 indexOfPreviousString = trie.indexOfString(addChunk.substring(0,addChunk.length()-1));
-                String correctlyPaddedBinaryString = Integer.toBinaryString(indexOfPreviousString);
-                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt())); // Log base 2 of the max index size
-                correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",correctlyPaddedBinaryString).replace(' ', '0');
-//                Log.on();
-                    Log.debug("\tFound: '" + indexOfPreviousString + "'" + " adding the final bit of p: " + addChunk.substring(addChunk.length()-1));
-                    Log.debug("\tPadded String: " + correctlyPaddedBinaryString);
-//                Log.off();
 
-                String newValue = correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);
-//                trie.addString(newValue);
-
-                encoded += " " + newValue;
-
-                Log.on();Log.debug("\tEncoding: '" + encoded); Log.off();
-//                indexOfString = trie.indexOfString(addChunk);
+                // Log base 2 of the max index size
+                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt()));
+                // Left pad with zeros accordingly
+                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+                // Add all of this to the encoding
+                encoded += encodingChunkSeparator + correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);;
             }
-//            System.out.format("Added a new section: Li: %3d, Ri: %3d, index: %3d > %s%n",leftIndex,(leftIndex + rightMoved),indexOfString,addChunk);
-            //encoded += " " + addChunk;
-
-            if(isLastChunk){
-                trie.addString(addChunk);
-                leftIndex = uncompressed.length()-1;
-            }
-
-
-
         }
-
         return encoded;
     }
 
@@ -121,6 +121,10 @@ public class LZtrie implements ILZ {
             rootNode.index = atIndex;
         }
 
+        /**
+         * Returns the maximum index of the Trie binary tree thus far
+         * @return integer denoting the max index of the Trie tree
+         */
         public int getMaxIndexAt()
         {
             return atIndex;
