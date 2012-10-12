@@ -98,11 +98,10 @@ public class LZtrie implements ILZ {
      */
     public Trie trieFactory()
     {
-        Log l = new Log("Trie::trieFactory"); l.log("Factorizing");
         return new Trie();
     }
 
-    public class Trie
+    public class Trie implements LZStore
     {
         /**
          * Top level trie node, initialized when the class is instantiated.
@@ -114,8 +113,6 @@ public class LZtrie implements ILZ {
         /** Just to get things started */
         public Trie()
         {
-            Log l = new Log("Trie::Trie");
-            l.log("Instantiated");
             atIndex = 1;
             rootNode = new TrieNode();
             rootNode.index = atIndex;
@@ -137,13 +134,10 @@ public class LZtrie implements ILZ {
          */
         public boolean addString(String ofOnlyOnesAndZeros)
         {
-            Log l = new Log("Trie::addString");
-            l.log("Adding String \"" + ofOnlyOnesAndZeros + "\"");
             int newIndex = rootNode.addString(ofOnlyOnesAndZeros,atIndex);
             boolean wasAdded = false;
             if(newIndex != atIndex)
             {
-                l.log("Index now at: " + newIndex);
                 atIndex = newIndex;
                 wasAdded = true;
             }
@@ -152,13 +146,11 @@ public class LZtrie implements ILZ {
 
         public boolean doesContainString(String ofOnlyOnesAndZeros)
         {
-            Log l = new Log("Trie::containsString");
             return rootNode.doesContainString(ofOnlyOnesAndZeros);
         }
 
         public int indexOfString(String ofOnlyOnesAndZeros)
         {
-            Log l = new Log("Trie::indexOfString");
             if(ofOnlyOnesAndZeros.length() == 0){
                 return 0;
             } else {
@@ -190,8 +182,6 @@ public class LZtrie implements ILZ {
              */
             public TrieNode()
             {
-                Log l = new Log("TrieNode::TrieNode");
-                l.log("Instantiated");
                 left =      null;
                 right =     null;
                 index =     0;
@@ -206,21 +196,12 @@ public class LZtrie implements ILZ {
              */
             public int addString(String onlyOfOnesAndZeros, int withIndex)
             {
-                Log l = new Log("TrieNode::addString");
-                l.log("Starting at index: " + withIndex);
-                l.changeIndent(Log.MORE);
-//                int newIndex = -1;
-
-                l.log(onlyOfOnesAndZeros);
                 if(onlyOfOnesAndZeros.length() > 0)
                 {
                     char firstCharacter = onlyOfOnesAndZeros.charAt(0);
-                    l.log("Adding/Checking '" + firstCharacter + "'");
                     if(firstCharacter == '0')
                     {
-                        // goes to left child
-                        l.log("left");
-
+                        // goes to left child....
                         // at this point I need to check if there is only one
                         // thing remaining to add, if there is and left is NOT null
                         // we are not adding.
@@ -237,9 +218,7 @@ public class LZtrie implements ILZ {
                     }
                     else if(firstCharacter == '1')
                     {
-                        // goes to right child
-                        l.log("right");
-
+                        // goes to right child.....................
                         // at this point I need to check if there is only one
                         // thing remaining to add, if there is and right is NOT null
                         // we are not adding.
@@ -258,12 +237,7 @@ public class LZtrie implements ILZ {
                     {
                         throw new InternalError("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
                     }
-                } else {
-                    l.log("empty string");
-                    //addWasNecessary = true;
                 }
-                l.log("Returning with withIndex: " + withIndex);
-                l.changeIndent(Log.LESS);
                 return withIndex;
 
             }
@@ -276,9 +250,6 @@ public class LZtrie implements ILZ {
             public boolean doesContainString(String ofOnlyOnesAndZeros)
             {
                 boolean wasFound = false;
-                Log l = new Log("TrieNode::doesContainString");
-                l.changeIndent(Log.MORE);
-                l.log(ofOnlyOnesAndZeros);
                 if(ofOnlyOnesAndZeros.length() == 0)
                 {
                     // Found, we are in a real node and the string is empty.
@@ -288,11 +259,9 @@ public class LZtrie implements ILZ {
                 {
                     // Get the first character from the string
                     char firstCharacter = ofOnlyOnesAndZeros.charAt(0);
-                    l.log("Checking '" + firstCharacter + "'");
                     if(firstCharacter == '0')
                     {
                         // goes to left child
-                        l.log("left");
                         if(left != null)
                         {
                             wasFound = left.doesContainString(ofOnlyOnesAndZeros.substring(1));
@@ -303,7 +272,6 @@ public class LZtrie implements ILZ {
                     else if(firstCharacter == '1')
                     {
                         // goes to right child
-                        l.log("right");
                         if(right != null)
                         {
                             wasFound = right.doesContainString(ofOnlyOnesAndZeros.substring(1));
@@ -314,21 +282,15 @@ public class LZtrie implements ILZ {
                     else
                     {
                         //throw new InternalError("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
-                        l.log("Not an error, just dumb");
                         wasFound = false;
                     }
                 }
-                l.log("Returning with Wasfound: " + wasFound);
-                l.changeIndent(Log.LESS);
                 return wasFound;
             }
 
             public int indexOfString(String ofOnlyOnesAndZeros)
             {
                 int indexOfFound = -1;
-                Log l = new Log("TrieNode::indexOfString");
-                l.changeIndent(Log.MORE);
-                l.log(ofOnlyOnesAndZeros);
                 if(ofOnlyOnesAndZeros.length() == 0)
                 {
                     // Found, we are in a real node and the string is empty.
@@ -338,11 +300,9 @@ public class LZtrie implements ILZ {
                 {
                     // Get the first character from the string
                     char firstCharacter = ofOnlyOnesAndZeros.charAt(0);
-                    l.log("Checking '" + firstCharacter + "'");
                     if(firstCharacter == '0')
                     {
                         // goes to left child
-                        l.log("left");
                         if(left != null)
                         {
                             indexOfFound = left.indexOfString(ofOnlyOnesAndZeros.substring(1));
@@ -353,7 +313,6 @@ public class LZtrie implements ILZ {
                     else if(firstCharacter == '1')
                     {
                         // goes to right child
-                        l.log("right");
                         if(right != null)
                         {
                             indexOfFound = right.indexOfString(ofOnlyOnesAndZeros.substring(1));
@@ -363,12 +322,9 @@ public class LZtrie implements ILZ {
                     }
                     else
                     {
-                        l.log("Not an error, just dumb");
                         indexOfFound = -1;
                     }
                 }
-                l.log("Returning with indexOfFound: " + indexOfFound);
-                l.changeIndent(Log.LESS);
                 return indexOfFound;
             }
 
