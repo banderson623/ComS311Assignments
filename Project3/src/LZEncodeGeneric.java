@@ -28,7 +28,7 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
      * @return the encoded/compressed string
      */
     protected String encodeWithStorage(String uncompressed, ILZ.LZDictionaryStoreInterface dictionaryStore) {
-        if(debug) System.out.println("encodeWithStorage >> '" +uncompressed + "'");
+//        if(debug) System.out.println("encodeWithStorage >> '" +uncompressed + "'");
 
         String encoded = "";
         int leftIndex = 0;
@@ -71,21 +71,17 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
 
             if(isLastChunk){
                 String paddedBinaryString="";
-                System.out.println("\nLast Chunk: " + addChunk);
+//                System.out.println("\nLast Chunk: " + addChunk);
 
                 //first check if we have this else where
                 indexOfPreviousString = dictionaryStore.indexOfString(addChunk);
                 if(indexOfPreviousString > -1){
                     // this is else where just add the index of this string with the correct chunk size
-//                    int numberOfZeros = chunkSize(dictionaryStore.getMaxIndex()) - 1;
-//                    if(dictionaryStore.getMaxIndex()>5){
-//                        numberOfZeros++;
-//                    }
-                    int numberOfZeros = Integer.toBinaryString(dictionaryStore.getMaxIndex()).length();
+                    int numberOfDigits = chunkSize(dictionaryStore.getMaxIndex()) - 1;
+//                    System.out.println("numberOfDigits%%%%: " + numberOfDigits + " index of previous: " + indexOfPreviousString);
 
-                    System.out.println("numberOfDigits%%%%: " + numberOfZeros + " index of previous: " + indexOfPreviousString);
-
-                    paddedBinaryString = String.format("%" + numberOfZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+//                    paddedBinaryString = String.format("%" + numberOfZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+                    paddedBinaryString = leftPadWith(Integer.toBinaryString(indexOfPreviousString), numberOfDigits, '0');
                 } else {
                     //Now we will see if we can get this string but one shorter
                     if(addChunk.length() > 1){
@@ -93,21 +89,25 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
                         if(indexOfPreviousString > -1){
                             // we found one less than the last
                             int numberOfDigits = chunkSize(dictionaryStore.getMaxIndex())-1;
+//                            System.out.println("numberOfDigits&&&&: " + numberOfDigits+ " from dictionarySize: " + dictionaryStore.getMaxIndex());
+//                            paddedBinaryString = String.format("%" + numberOfDigits + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+//                            paddedBinaryString += addChunk.substring(addChunk.length()-1);
+                            paddedBinaryString = leftPadWith((Integer.toBinaryString(indexOfPreviousString) + addChunk.substring(addChunk.length() - 1)), numberOfDigits, '0');
 
-                            System.out.println("numberOfDigits&&&&: " + numberOfDigits);
-                            paddedBinaryString = String.format("%" + numberOfDigits + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
-                            paddedBinaryString += addChunk.substring(addChunk.length()-1);
                         }
                     }
                 }
 
                 if(paddedBinaryString.length() <= 0) {
                     int numberOfDigits = chunkSize(dictionaryStore.getMaxIndex());
-                    System.out.println("numberOfDigits*****: " + numberOfDigits);
-                    paddedBinaryString = String.format("%" + numberOfDigits + "s",addChunk).replace(' ', '0');
+//                    System.out.println("numberOfDigits*****: " + numberOfDigits + " from dictionarySize: " + dictionaryStore.getMaxIndex());
+//                    paddedBinaryString = String.format("%" + numberOfDigits + "s",addChunk).replace(' ', '0');
+//                    System.out.println("indexOfPreviousString: " + indexOfPreviousString);
+                    paddedBinaryString = leftPadWith(addChunk, numberOfDigits, '0');
+
                 }
 
-                System.out.println(" <<< Adding encoding chunk: " + paddedBinaryString);
+//                System.out.println(" <<< Adding encoding chunk: " + paddedBinaryString);
 
                 encoded += encodingChunkSeparator + paddedBinaryString;
 
@@ -116,7 +116,7 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
             }
 
             if(!isLastChunk){
-                if(debug)System.out.println("\nThis Chunk: " + addChunk);
+//                if(debug)System.out.println("\nThis Chunk: " + addChunk);
 
                 /**
                  * Informally, to determine the codeword for the (n+1)th phrase p,
@@ -126,11 +126,12 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
                  * of p to the end of that. Then add the new phrase to the dictionary and repeat.
                  */
                 indexOfPreviousString = dictionaryStore.indexOfString(addChunk.substring(0, addChunk.length() - 1));
-                if(debug) System.out.println("indexOfPrevious: " + indexOfPreviousString);
+//                if(debug) System.out.println("indexOfPrevious: " + indexOfPreviousString);
 
 
                 // Log base 2 of the max index size
                 int max_index = dictionaryStore.getMaxIndex();
+//                int chunkSize = (integerAddressSize - Integer.numberOfLeadingZeros(max_index));
                 int chunkSize = (integerAddressSize - Integer.numberOfLeadingZeros(max_index));
                 if(max_index > 5){// && max_index < 8){
                     chunkSize++;
@@ -138,16 +139,17 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
 
 //                int chunkSize = chunkSize(dictionaryStore.getMaxIndex());
 //                if(chunkSize < 1) chunkSize = 1;
-                System.out.println("Leading zeros**: " + chunkSize + " from maxIndex: " + max_index);
+//                System.out.println("Leading zeros**: " + chunkSize + " from maxIndex: " + max_index);
 //                System.out.println("Leading zeros**: " + (chunkSize(max_index-1)) + " from maxIndex: " + max_index);
 
 
                 // Left pad with zeros accordingly
-                String correctlyPaddedBinaryString = String.format("%" + chunkSize + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
+                String correctlyPaddedBinaryString = leftPadWith(Integer.toBinaryString(indexOfPreviousString),chunkSize,'0');
+//                String correctlyPaddedBinaryString = String.format("%" + chunkSize + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
 
                 String encodedNugget = encodingChunkSeparator + correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);
 
-                System.out.println(" <<< Adding encoding chunk: " + encodedNugget);
+//                System.out.println(" <<< Adding encoding chunk: " + encodedNugget);
 
                 // Add all of this to the encoding
                 encoded += encodedNugget;
@@ -166,8 +168,15 @@ public class LZEncodeGeneric<T extends ILZ.LZDictionaryStoreInterface>
         return (int) (1 + Math.ceil(Math.log(chunkIndex) / Math.log(2)));
     }
 
-    private static int bitWidth(int indexCount)
+    private static String leftPadWith(String value, int desiredLength, char fill)
     {
-        return Integer.toBinaryString(indexCount).length();
+        StringBuilder str = new StringBuilder();
+        int zerosNeeded = desiredLength - value.length();
+
+        for(int i = 0; i < zerosNeeded; ++i) str.append(fill);
+
+        str.append(value);
+//        System.out.println("Building " + value + " to be " + str.toString());
+        return str.toString();
     }
 }

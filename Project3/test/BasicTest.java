@@ -18,7 +18,7 @@ public class BasicTest {
 
 //        testEncodingLZHash();
 //        testEncodingLZHash2();
-//        testEncodingLZHash1andaHalf();
+        testEncodingLZHash1andaHalf();
         testSimpleEncoderDecoder();
 
     }
@@ -148,7 +148,7 @@ public class BasicTest {
 
     private static void testEncodingLZHash1andaHalf(){
         ILZ lz = new LZhash();
-        String input = "000";
+        String input = "000001000";
         String encoded = lz.encode(input);
 
         System.out.println("\n\nInput            " + input);
@@ -157,7 +157,7 @@ public class BasicTest {
 //        System.out.println("Decoded          " + LZDecoder.decode("0010"));
 //
 //
-        input = "001";
+        input = "11111111";
         encoded = lz.encode(input);
 
         System.out.println("\n\nInput            " + input);
@@ -185,10 +185,14 @@ public class BasicTest {
     }
 
     private static void testSimpleEncoderDecoder(){
-        ILZ lz = new LZtrie();
-        String testString = "01";
+        ILZ lz = new LZhash();
+        String testString = "";
+        String result = "";
+
         for(int i = 0; i < 15; ++i){
-            testString += ((Math.random() > 0.5) ? "1" : "0");
+            System.out.println("____________________________________________________________________________________________________");
+
+            testString += ((Math.random() > 0.85) ? "1" : "0");
             System.out.println("Number of digits: " + testString.length());
             String encoded = lz.encode(testString);
             System.out.println("Encoding: " + testString + " --> " + encoded);
@@ -196,18 +200,23 @@ public class BasicTest {
                 String decodedTestString = LZDecoder.decode(encoded);
                 System.out.println("Decoding: " + decodedTestString);
                 if(!testString.equals(decodedTestString)){
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
+//                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
     //                return;
+                    result += "-";
                 } else {
-                    System.out.println("...............................................................Passed");
+//                    System.out.println("...............................................................Passed");
+                    result += "+";
                 }
             } catch(IndexOutOfBoundsException err) {
-                System.out.println("************************************************oops " + err);
+//                System.out.println("************************************************oops " + err);
+                result += "*";
             } catch(IllegalArgumentException err) {
-                System.out.println("************************************************oops  " + err);
+//                System.out.println("************************************************oops  " + err);
+                result += "*";
             }
 
         }
+        System.out.println("\n\nResult : " + result);
     }
 
 }

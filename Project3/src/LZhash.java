@@ -48,12 +48,9 @@ public class LZhash extends LZEncodeGeneric<LZhash.HashDictionary> implements IL
 
         @Override
         public boolean addString(String ofOnlyOnesAndZeros) {
-            System.out.print("Thinking about adding: '" + ofOnlyOnesAndZeros + "'");
             if (hash.containsKey(ofOnlyOnesAndZeros)){
-                System.out.println("  --> already have it ");
                 return false;
             } else {
-                System.out.println("  --> adding at index: " + hash.size());
                 hash.put(ofOnlyOnesAndZeros,hash.size());
                 return true;
             }
@@ -61,16 +58,9 @@ public class LZhash extends LZEncodeGeneric<LZhash.HashDictionary> implements IL
 
         @Override
         public int indexOfString(String ofOnlyOnesAndZeros) {
-            System.out.print("Getting Index of: '" + ofOnlyOnesAndZeros + "'");
-
-//            System.out.println("Hash: " + hash.toString());
-
             if (hash.containsKey(ofOnlyOnesAndZeros)){
-                System.out.println("  --> at index: " + hash.get(ofOnlyOnesAndZeros));
                 return hash.get(ofOnlyOnesAndZeros);
             } else {
-                System.out.println("  --> at index: -1");
-
                 return -1;
             }
         }
