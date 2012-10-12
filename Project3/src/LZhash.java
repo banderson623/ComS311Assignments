@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 /**
  * Created with IntelliJ IDEA.
  * User: brian_anderson
@@ -10,105 +12,57 @@
  * Turn in the file LZtrie.java and any other source files you create.
  * Place all such files in the default package.
  */
-public class LZhash implements ILZ {
-    private LZStore store;
+public class LZhash extends LZEncodeGeneric<LZhash.HashDictionary> implements ILZ {
+    private LZDictionaryStoreInterface dictionaryStore;
 
     @Override
     /**
      * Uncompressed string must contain only 1 and 0's
-     * @returns encoded string
+     * @returns LZ encoded string
      */
-    public String encode(String uncompressed)
-    {
-        store = new Hasher();
-        String encoded = "";
-        int leftIndex = 0;
-        int rightMoved = 0;
-        String encodingChunkSeparator = "";
-
-        store.addString(uncompressed.substring(leftIndex, leftIndex + rightMoved));
-        while(leftIndex < uncompressed.length() - 1){
-            leftIndex = leftIndex + rightMoved;
-            rightMoved = 1;
-            // while it is unable to add the new substring, keep advancing the right index by one
-            // until we get a new set of undiscovered substring
-            boolean isLastChunk = false;
-
-            while(!isLastChunk && !store.addString(uncompressed.substring(leftIndex, leftIndex + rightMoved)))
-            {
-                rightMoved++;
-
-                if((leftIndex + rightMoved) >= uncompressed.length() - 1){
-                    isLastChunk = true;
-                    rightMoved = uncompressed.length() - leftIndex;
-                }
-            }
-
-            String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
-            int indexOfPreviousString = -1;
-
-            if(isLastChunk){
-                store.addString(addChunk);
-
-                /**
-                 * If the final phrase has occurred before (the most likely scenario for most input strings),
-                 * then do not output its final bit as part of the codeword; simply output its index.
-                 */
-                indexOfPreviousString = store.indexOfString(addChunk);
-                if(indexOfPreviousString > -1){
-                    // nothing to do here
-                } else {
-                    indexOfPreviousString = store.indexOfString(addChunk.substring(0,addChunk.length()-1));
-                }
-
-                // Log base 2 of the max index size
-                int leadingZeros = (31 - Integer.numberOfLeadingZeros(store.getMaxIndexAt()))+1; // Log base 2 of the max index size
-                // Left pad with zeros accordingly
-                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
-                // Add to encoding
-                encoded += encodingChunkSeparator + correctlyPaddedBinaryString;// addChunk.substring(addChunk.length()-1);
-                // Move left index appropriately to denote done state
-                leftIndex = uncompressed.length()-1;
-            }
-
-            if(!isLastChunk){
-                // Need to get the index of the chunk minus the last digit
-                /**
-                 * Informally, to determine the codeword for the (n+1)th phrase p,
-                 * find the dictionary index (order of addition to the dictionary)
-                 * of the one-bit-shorter phrase that p extends, represent that integer in
-                 * binary using (log2 n rounded up), and add the final bit
-                 * of p to the end of that. Then add the new phrase to the dictionary and repeat.
-                 */
-                indexOfPreviousString = store.indexOfString(addChunk.substring(0,addChunk.length()-1));
-
-                // Log base 2 of the max index size
-                int leadingZeros = (31 - Integer.numberOfLeadingZeros(store.getMaxIndexAt()));
-                // Left pad with zeros accordingly
-                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
-                // Add all of this to the encoding
-                encoded += encodingChunkSeparator + correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);;
-            }
-        }
-        return encoded;
+    public String encode(String uncompressed){
+        return encodeWithStorage(uncompressed, new HashDictionary());
     }
 
-    public class Hasher implements LZStore
+
+    /**
+     * Implements a HashMap to store the LZDictionary
+     */
+    public class HashDictionary implements ILZ.LZDictionaryStoreInterface
     {
+        /**
+         * This is the primary storage of this
+         * The Key, String, is the string
+         * The Value is the index of that inserted string
+         */
+        private HashMap<String, Integer> hash;
+
+        public HashDictionary() {
+            hash = new HashMap<String, Integer>();
+        }
 
         @Override
-        public int getMaxIndexAt() {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        public int getMaxIndex() {
+            return hash.size();
         }
 
         @Override
         public boolean addString(String ofOnlyOnesAndZeros) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            if (hash.containsKey(ofOnlyOnesAndZeros)){
+                return false;
+            } else {
+                hash.put(ofOnlyOnesAndZeros,hash.size());
+                return true;
+            }
         }
 
         @Override
         public int indexOfString(String ofOnlyOnesAndZeros) {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            if (hash.containsKey(ofOnlyOnesAndZeros)){
+                return hash.get(ofOnlyOnesAndZeros);
+            } else {
+                return -1;
+            }
         }
     }
 }

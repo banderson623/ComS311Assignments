@@ -10,104 +10,33 @@
  *  - https://forums.oracle.com/forums/thread.jspa?messageID=8787521
  *
  */
-public class LZtrie implements ILZ {
-    private Trie trie;
+public class LZtrie extends LZEncodeGeneric<LZtrie.Trie> implements ILZ {
 
     @Override
     /**
      * Uncompressed string must contain only 1 and 0's
-     * @returns encoded string
+     * @returns LZ encoded string
      */
-    public String encode(String uncompressed)
-    {
-        trie = new Trie();
-        String encoded = "";
-        int leftIndex = 0;
-        int rightMoved = 0;
-        String encodingChunkSeparator = "";
-
-        trie.addString(uncompressed.substring(leftIndex,leftIndex+rightMoved));
-        while(leftIndex < uncompressed.length() - 1){
-            leftIndex = leftIndex + rightMoved;
-            rightMoved = 1;
-            // while it is unable to add the new substring, keep advancing the right index by one
-            // until we get a new set of undiscovered substring
-            boolean isLastChunk = false;
-
-            while(!isLastChunk && !trie.addString(uncompressed.substring(leftIndex, leftIndex + rightMoved)))
-            {
-                rightMoved++;
-
-                if((leftIndex + rightMoved) >= uncompressed.length() - 1){
-                    isLastChunk = true;
-                    rightMoved = uncompressed.length() - leftIndex;
-                }
-            }
-
-            String addChunk = uncompressed.substring(leftIndex,(leftIndex + rightMoved));
-            int indexOfPreviousString = -1;
-
-            if(isLastChunk){
-                trie.addString(addChunk);
-
-                /**
-                 * If the final phrase has occurred before (the most likely scenario for most input strings),
-                 * then do not output its final bit as part of the codeword; simply output its index.
-                 */
-                indexOfPreviousString = trie.indexOfString(addChunk);
-                if(indexOfPreviousString > -1){
-                    // nothing to do here
-                } else {
-                    indexOfPreviousString = trie.indexOfString(addChunk.substring(0,addChunk.length()-1));
-                }
-
-                // Log base 2 of the max index size
-                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt()))+1; // Log base 2 of the max index size
-                // Left pad with zeros accordingly
-                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
-                // Add to encoding
-                encoded += encodingChunkSeparator + correctlyPaddedBinaryString;// addChunk.substring(addChunk.length()-1);
-                // Move left index appropriately to denote done state
-                leftIndex = uncompressed.length()-1;
-            }
-
-            if(!isLastChunk){
-                // Need to get the index of the chunk minus the last digit
-                /**
-                 * Informally, to determine the codeword for the (n+1)th phrase p,
-                 * find the dictionary index (order of addition to the dictionary)
-                 * of the one-bit-shorter phrase that p extends, represent that integer in
-                 * binary using (log2 n rounded up), and add the final bit
-                 * of p to the end of that. Then add the new phrase to the dictionary and repeat.
-                 */
-                indexOfPreviousString = trie.indexOfString(addChunk.substring(0,addChunk.length()-1));
-
-                // Log base 2 of the max index size
-                int leadingZeros = (31 - Integer.numberOfLeadingZeros(trie.getMaxIndexAt()));
-                // Left pad with zeros accordingly
-                String correctlyPaddedBinaryString = String.format("%" + leadingZeros + "s",Integer.toBinaryString(indexOfPreviousString)).replace(' ', '0');
-                // Add all of this to the encoding
-                encoded += encodingChunkSeparator + correctlyPaddedBinaryString + addChunk.substring(addChunk.length()-1);;
-            }
-        }
-        return encoded;
+    public String encode(String uncompressed){
+        return encodeWithStorage(uncompressed, new Trie());
     }
 
     /**
-     * Todo: Remove this before submission, just for testing
+     * This classes implements a Trie binary tree structure to support
+     * the interface LZDictionaryStoreInterface, which allows three
+     * items:
+     *
+     *  boolean addString()
+     *  boolean getMaxIndex()
      */
-    public Trie trieFactory()
-    {
-        return new Trie();
-    }
-
-    public class Trie implements LZStore
+    public class Trie implements ILZ.LZDictionaryStoreInterface
     {
         /**
          * Top level trie node, initialized when the class is instantiated.
          */
         private TrieNode rootNode;
 
+        /** Holds the size of the trie */
         private int atIndex;
 
         /** Just to get things started */
@@ -122,7 +51,7 @@ public class LZtrie implements ILZ {
          * Returns the maximum index of the Trie binary tree thus far
          * @return integer denoting the max index of the Trie tree
          */
-        public int getMaxIndexAt()
+        public int getMaxIndex()
         {
             return atIndex;
         }
@@ -142,11 +71,6 @@ public class LZtrie implements ILZ {
                 wasAdded = true;
             }
             return wasAdded;
-        }
-
-        public boolean doesContainString(String ofOnlyOnesAndZeros)
-        {
-            return rootNode.doesContainString(ofOnlyOnesAndZeros);
         }
 
         public int indexOfString(String ofOnlyOnesAndZeros)
@@ -194,7 +118,7 @@ public class LZtrie implements ILZ {
              * @param onlyOfOnesAndZeros is a string of something like "0101001"
              * @return
              */
-            public int addString(String onlyOfOnesAndZeros, int withIndex)
+            private int addString(String onlyOfOnesAndZeros, int withIndex)
             {
                 if(onlyOfOnesAndZeros.length() > 0)
                 {
@@ -247,7 +171,7 @@ public class LZtrie implements ILZ {
              * @param ofOnlyOnesAndZeros A string of 1010
              * @return true if the string is stored in the trie
              */
-            public boolean doesContainString(String ofOnlyOnesAndZeros)
+            private boolean doesContainString(String ofOnlyOnesAndZeros)
             {
                 boolean wasFound = false;
                 if(ofOnlyOnesAndZeros.length() == 0)
@@ -265,8 +189,6 @@ public class LZtrie implements ILZ {
                         if(left != null)
                         {
                             wasFound = left.doesContainString(ofOnlyOnesAndZeros.substring(1));
-                        } else {
-                            wasFound = false;
                         }
                     }
                     else if(firstCharacter == '1')
@@ -275,8 +197,6 @@ public class LZtrie implements ILZ {
                         if(right != null)
                         {
                             wasFound = right.doesContainString(ofOnlyOnesAndZeros.substring(1));
-                        } else {
-                            wasFound = false;
                         }
                     }
                     else
@@ -288,7 +208,7 @@ public class LZtrie implements ILZ {
                 return wasFound;
             }
 
-            public int indexOfString(String ofOnlyOnesAndZeros)
+            private int indexOfString(String ofOnlyOnesAndZeros)
             {
                 int indexOfFound = -1;
                 if(ofOnlyOnesAndZeros.length() == 0)
