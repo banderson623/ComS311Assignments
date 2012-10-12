@@ -159,7 +159,7 @@ public class LZtrie extends LZEncodeGeneric<LZtrie.Trie> implements ILZ {
                     }
                     else
                     {
-                        throw new InternalError("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
+                        throw new IllegalArgumentException("Only strings containing 0 and 1 are accepted " + onlyOfOnesAndZeros);
                     }
                 }
                 return withIndex;

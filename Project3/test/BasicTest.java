@@ -3,9 +3,6 @@
  * Date: 10/10/12
  */
 public class BasicTest {
-
-
-
     public static void main(String [ ] args){
         System.out.println("Hello world, this is Assignment 3");
 //        Log.off();
@@ -15,12 +12,14 @@ public class BasicTest {
 //        trieShouldBeAbleToFindThings();
 //        trieShouldOnlyFindThingsThatItHas();
 //        testSimpleLZAdding();
-        testEncodingLZTrie();
-        testEncodingLZTrie2();
 
-        testEncodingLZHash();
-        testEncodingLZHash2();
+//        testEncodingLZTrie();
+//        testEncodingLZTrie2();
 
+//        testEncodingLZHash();
+//        testEncodingLZHash2();
+//        testEncodingLZHash1andaHalf();
+        testSimpleEncoderDecoder();
 
     }
 //
@@ -146,6 +145,34 @@ public class BasicTest {
         System.out.println("Encoded version: " + encoded);
 
     }
+
+    private static void testEncodingLZHash1andaHalf(){
+        ILZ lz = new LZhash();
+        String input = "000";
+        String encoded = lz.encode(input);
+
+        System.out.println("\n\nInput            " + input);
+        System.out.println("                      Encoded version: " + encoded);
+        System.out.println("Decoded          " + LZDecoder.decode(encoded));
+//        System.out.println("Decoded          " + LZDecoder.decode("0010"));
+//
+//
+        input = "001";
+        encoded = lz.encode(input);
+
+        System.out.println("\n\nInput            " + input);
+        System.out.println("                      Encoded version: " + encoded);
+        System.out.println("Decoded          " + LZDecoder.decode(encoded));
+
+        String input2 = "0001";
+        String encoded2 = lz.encode(input2);
+
+        System.out.println("\n\nInput            " + input2);
+        System.out.println("                      Encoded version: " + encoded2);
+        System.out.println("Decoded          " + LZDecoder.decode(encoded2));
+
+    }
+
     public static void testEncodingLZHash2(){
         ILZ lz = new LZhash();
         String input = "00000000000000000000000000000000000000000000000000";
@@ -155,6 +182,32 @@ public class BasicTest {
         System.out.println("\n\n                 " + output);
         System.out.println("Encoded version: " + encoded);
 
+    }
+
+    private static void testSimpleEncoderDecoder(){
+        ILZ lz = new LZhash();
+        String testString = "";
+        for(int i = 0; i < 10; ++i){
+            testString += ((Math.random() > 0.5) ? "1" : "0");
+//            testString += "1";
+            String encoded = lz.encode(testString);
+            System.out.println("Encoding: " + testString + " --> " + encoded);
+            try {
+                String decodedTestString = LZDecoder.decode(encoded);
+                System.out.println("Decoding: " + decodedTestString);
+                if(!testString.equals(decodedTestString)){
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
+    //                return;
+                } else {
+                    System.out.println("...............................................................Passed");
+                }
+            } catch(IndexOutOfBoundsException err) {
+                System.out.println("   oops " + err);
+            } catch(IllegalArgumentException err) {
+                System.out.println("   oops " + err);
+            }
+
+        }
     }
 
 }
