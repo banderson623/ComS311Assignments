@@ -186,13 +186,13 @@ public class BasicTest {
 
     private static void testSimpleEncoderDecoder(){
         ILZ lz = new LZhash();
-        String testString = "";
+        String testString = "00000000";
         String result = "";
 
         for(int i = 0; i < 15; ++i){
             System.out.println("____________________________________________________________________________________________________");
-
-            testString += ((Math.random() > 0.85) ? "1" : "0");
+//
+            testString += ((Math.random() > 0.35) ? "1" : "0");
             System.out.println("Number of digits: " + testString.length());
             String encoded = lz.encode(testString);
             System.out.println("Encoding: " + testString + " --> " + encoded);
