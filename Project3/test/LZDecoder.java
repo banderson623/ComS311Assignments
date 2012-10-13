@@ -45,9 +45,11 @@ public class LZDecoder {
     {
         ArrayList<String> chunkedInput = new ArrayList<String>();
         int chunkIndex = 1;
+        System.out.println("Decoding: " + z);
         while(!z.isEmpty())
         {
             int chunkSize = chunkSize(chunkIndex);
+//            System.out.println("chunkSize: " + chunkSize + ", z: " + z);
 
             //the last string can be 1 smaller than it would otherwise be (no copied bit)
             if(chunkSize > z.length())
@@ -55,14 +57,20 @@ public class LZDecoder {
                 //But it cannot be any smaller than that!
                 if(chunkSize - 1 > z.length())
                 {
-                    throw new IllegalArgumentException("The encoded string is not of a valid length.");
+                    throw new IllegalArgumentException("The encoded string is not of a valid length, last string is too small [" + z + "]");
                 }
+
                 chunkedInput.add(z.substring(0, chunkSize - 1));
+//                System.out.println("chunkedInput: " + chunkedInput);
+
                 z = z.substring(chunkSize - 1);
             }
             else
             {
+
                 chunkedInput.add(z.substring(0, chunkSize));
+//                System.out.println("chunkedInput: " + chunkedInput);
+
                 z = z.substring(chunkSize);
             }
 

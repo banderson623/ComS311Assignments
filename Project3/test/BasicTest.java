@@ -4,96 +4,17 @@
  */
 public class BasicTest {
     public static void main(String [ ] args){
-        System.out.println("Hello world, this is Assignment 3");
-//        Log.off();
-//        trieTest();
-//        trieDoubleAddTest();
-//        trieTestShouldError();
-//        trieShouldBeAbleToFindThings();
-//        trieShouldOnlyFindThingsThatItHas();
-//        testSimpleLZAdding();
 
-//        testEncodingLZTrie();
-//        testEncodingLZTrie2();
+        testEncodingLZTrie();
+        testEncodingLZTrie2();
 
 //        testEncodingLZHash();
 //        testEncodingLZHash2();
-        testEncodingLZHash1andaHalf();
-        testSimpleEncoderDecoder();
 
+        testEncodingLZHash1andaHalf();
+//        testSimpleEncoderDecoder();
+//
     }
-//
-//    public static void trieTest()
-//    {
-//        Log.separator();
-//        LZtrie lzt = new LZtrie();
-//        LZtrie.Trie t = lzt.trieFactory();
-//        t.addString("00");
-//    }
-//
-//    public static void trieDoubleAddTest()
-//    {
-//        Log.separator();
-//        LZtrie lzt = new LZtrie();
-//        LZtrie.Trie t = lzt.trieFactory();
-//        boolean firstAdd = t.addString("001100");
-//        System.out.println("First add should be TRUE: " + firstAdd);
-//
-//        boolean secondAdd = t.addString("00110");
-//        System.out.println("Second add should be FALSE: " + secondAdd);
-//    }
-//
-//    public static void trieTestShouldError()
-//    {
-//        Log.separator();
-//        LZtrie lzt = new LZtrie();
-//        LZtrie.Trie t = lzt.trieFactory();
-//        try {
-//            t.addString("a");
-//        } catch (InternalError e){
-//            System.out.println("Got good error!");
-//        }
-//    }
-//
-//    public static void trieShouldBeAbleToFindThings()
-//    {
-//        Log.separator();
-//        LZtrie lzt = new LZtrie();
-//        LZtrie.Trie t = lzt.trieFactory();
-//        String toTryOnTrieHaHa = "01001";
-//        t.addString(toTryOnTrieHaHa);
-//        if(!t.doesContainString(toTryOnTrieHaHa)) {
-//            System.out.println("FAIL - Should contain " + toTryOnTrieHaHa);
-//        } else {
-//            System.out.println("Trie can find");
-//        }
-//        if(!t.doesContainString(toTryOnTrieHaHa.substring(0,2))) {
-//            System.out.println("FAIL - Should contain " + toTryOnTrieHaHa.substring(0,2));
-//        } else {
-//            System.out.println("Trie can find");
-//        }
-//        // shouldn't find this
-//        if(t.doesContainString(toTryOnTrieHaHa.substring(2))) {
-//            System.out.println("FAIL - Should contain " + toTryOnTrieHaHa.substring(2));
-//        } else {
-//            System.out.println("Trie can find");
-//        }
-//    }
-//
-//    public static void trieShouldOnlyFindThingsThatItHas()
-//    {
-//        Log.separator();
-//        LZtrie lzt = new LZtrie();
-//        LZtrie.Trie t = lzt.trieFactory();
-//        String toTryOnTrieHaHa = "001";
-//        t.addString(toTryOnTrieHaHa);
-//        if(t.doesContainString(toTryOnTrieHaHa + "01")) {
-//            System.out.println("Should not contain " + toTryOnTrieHaHa + "01");
-//        } else {
-//            System.out.println("Trie can find");
-//        }
-//
-//    }
 
 
     private static void testSimpleLZAdding()
@@ -115,22 +36,28 @@ public class BasicTest {
     }
 
     private static void testEncodingLZTrie(){
-        ILZ lzt = new LZtrie();
+        ILZ lzt = new LZhash();
         String input = "010011110110101110011";
-        String output = "00 01 010 101 1000 1011 0011 1010 0100".replace(" ", "");
+//        String input = "010011110110101110011000001";
+        String output = "00 01 010 101 1000 1011 0011 1010 0100";//.replace(" ", "");
         String encoded = lzt.encode(input);
 
-        System.out.println("\n\n                 " + output);
-        System.out.println("Encoded version: " + encoded);
 
+
+        System.out.println("\n\nExpected          " + output);
+        System.out.println("Encoded version: " + encoded);
+        System.out.println("Decoded version:  " + LZDecoder.decode(output.replace(" ","")));
+        System.out.println("Decoded version:  " + LZDecoder.decode(encoded.replace(" ","")));
+
+        System.out.println("input :           " + input);
     }
     private static void testEncodingLZTrie2(){
         ILZ lzt = new LZtrie();
         String input = "00000000000000000000000000000000000000000000000000";
-        String output = "00 10 100 110 1000 1010 1100 1110 10000 0101".replace(" ", "");
+        String output = "00 10 100 110 1000 1010 1100 1110 10000 0101";//.replace(" ", "");
         String encoded = lzt.encode(input);
 
-        System.out.println("\n\n                 " + output);
+        System.out.println("\n\n                  " + output);
         System.out.println("Encoded version: " + encoded);
 
     }
@@ -153,23 +80,24 @@ public class BasicTest {
 
         System.out.println("\n\nInput            " + input);
         System.out.println("                      Encoded version: " + encoded);
-        System.out.println("Decoded          " + LZDecoder.decode(encoded));
+        System.out.println("Decoded          " + LZDecoder.decode(encoded.replace(" ","")));
 //        System.out.println("Decoded          " + LZDecoder.decode("0010"));
 //
 //
-        input = "11111111";
+        input = "0110100000";
         encoded = lz.encode(input);
 
-        System.out.println("\n\nInput            " + input);
+        System.out.println("\n\nInput            " + input + " [" + input.length() +"]");
         System.out.println("                      Encoded version: " + encoded);
-        System.out.println("Decoded          " + LZDecoder.decode(encoded));
+        System.out.println("\nDecoded          " + LZDecoder.decode(encoded.replace(" ","")));
+        System.out.println("Input            " + input + " [" + input.length() +"]");
 
-        String input2 = "0001";
-        String encoded2 = lz.encode(input2);
-
-        System.out.println("\n\nInput            " + input2);
-        System.out.println("                      Encoded version: " + encoded2);
-        System.out.println("Decoded          " + LZDecoder.decode(encoded2));
+//        String input2 = "0001";
+//        String encoded2 = lz.encode(input2);
+//
+//        System.out.println("\n\nInput            " + input2);
+//        System.out.println("                      Encoded version: " + encoded2);
+//        System.out.println("Decoded          " + LZDecoder.decode(encoded2.replace(" ","")));
 
     }
 
@@ -186,10 +114,10 @@ public class BasicTest {
 
     private static void testSimpleEncoderDecoder(){
         ILZ lz = new LZhash();
-        String testString = "00000000";
+        String testString = "1";
         String result = "";
 
-        for(int i = 0; i < 15; ++i){
+        for(int i = 0; i < 10; ++i){
             System.out.println("____________________________________________________________________________________________________");
 //
             testString += ((Math.random() > 0.35) ? "1" : "0");
@@ -197,7 +125,7 @@ public class BasicTest {
             String encoded = lz.encode(testString);
             System.out.println("Encoding: " + testString + " --> " + encoded);
             try {
-                String decodedTestString = LZDecoder.decode(encoded);
+                String decodedTestString = LZDecoder.decode(encoded.replace(" ",""));
                 System.out.println("Decoding: " + decodedTestString);
                 if(!testString.equals(decodedTestString)){
 //                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Failed");
@@ -208,10 +136,10 @@ public class BasicTest {
                     result += "+";
                 }
             } catch(IndexOutOfBoundsException err) {
-//                System.out.println("************************************************oops " + err);
+                System.out.println("************************************************oops " + err);
                 result += "*";
             } catch(IllegalArgumentException err) {
-//                System.out.println("************************************************oops  " + err);
+                System.out.println("************************************************oops  " + err);
                 result += "*";
             }
 
