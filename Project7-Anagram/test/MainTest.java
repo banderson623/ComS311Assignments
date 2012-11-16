@@ -14,19 +14,12 @@ public class MainTest {
         AnagramEnumerator ana = new AnagramEnumerator();
 
         ana.initialize(ana.readWordsIntoSetFromFileAt(wordListFile));
-//        Set<String>words = ana.readWordsIntoSetFromFileAt(wordListFile);
-//        Iterator<String> it = words.iterator();
-//        for(int i = 1; i < 5 && it.hasNext(); i++)
-//        {
-//            System.out.println(it.next());
-//        }
 
-        String toTest = "brian";
-        System.out.println(toTest);
+        String toTest = "brian"; System.out.println(toTest + " --> " + ana.enumerateAnagramsUnderE(toTest));
 
-        //System.out.println(ana.getAllAnagramPossibilitiesFromString(toTest));
+//        String toTest = "brian";
+//        System.out.println(toTest + " --> " + ana.enumerateAnagramsUnderBagE(toTest));
 
-        System.out.println(ana.enumerateAnagramsUnderE(toTest));
 
     }
 }

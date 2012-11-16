@@ -2,9 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * You are to write a program that solves the anagram enumeration problem by
@@ -70,16 +68,19 @@ public class AnagramEnumerator implements IAnagramEnumerator {
     @Override
     public void initialize(Set<String> dictionary)
     {
-        this.dictionary = (HashSet) dictionary;
-        System.out.println("Dictionary Loaded: " + this.dictionary.size());
+        Iterator<String> it = dictionary.iterator();
+        while(it.hasNext()){
+            this.dictionary.add(it.next());
+        }
     }
 
     @Override
     public Set<String> enumerateAnagramsUnderE(String s) {
-        HashSet<String> possible = (HashSet) getAllAnagramPossibilitiesFromString(s);
+        HashSet<String> possible = (HashSet) getPossible(s,"");
         HashSet<String> goodOnes = new HashSet<String>();
         for(String word : possible)
         {
+            // Only use the words of the correct size
             if(word.length() == s.length()){
                 goodOnes.add(word);
             }
@@ -88,34 +89,22 @@ public class AnagramEnumerator implements IAnagramEnumerator {
         return goodOnes;
     }
 
-    @Override
-    public Set<Map<String, Integer>> enumerateAnagramsUnderBagE(String s) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
-
-
-
-    public Set<String> getAllAnagramPossibilitiesFromString(String word)
+    protected Set<String> getPossible(String possibleLetters,
+                                      String usedSoFar)
     {
-        HashSet<String> possible = new HashSet<String>();
-        String used = "";
-        possible.addAll(getPossible(word,used));
-
-        return possible;
-    }
-
-
-    protected Set<String> getPossible(String possibleLetters, String usedSoFar)
-    {
-
+        // This is the collection of possible words
+        // (those sets of characters that are in the dictionary)
         HashSet<String> possible = new HashSet<String>();
 
+        // If this current word (collection characters) is in the dictionary
+        // add it to the possible ones
         if(this.dictionary.contains(usedSoFar)){
-//            System.out.println("Adding..." + usedSoFar);
             possible.add(usedSoFar);
         }
 
+        // Now for each of the unused letters (those that are possible to use)
+        // loop through them and recursively try them
         for(int i = 0; i < possibleLetters.length(); ++i)
         {
             //gets the current letter we are working on
@@ -125,6 +114,68 @@ public class AnagramEnumerator implements IAnagramEnumerator {
         }
 
         return possible;
+    }
+
+
+
+
+
+    @Override
+    public Set<Map<String, Integer>> enumerateAnagramsUnderBagE(String inputString) {
+        Set<Map<String, Integer>> results = new HashSet<Map<String, Integer>>();
+        results = getPossibleBags(inputString, "", new HashMap<String, Integer>());
+        return results;
+    }
+
+
+
+    protected  Set<Map<String, Integer>> getPossibleBags(String possibleLetters,
+                                                         String usedSoFar,
+                                                         Map<String,Integer> currentBag)
+    {
+        // This is the collection of possible words
+        // (those sets of characters that are in the dictionary)
+        HashSet<String> possible = new HashSet<String>();
+        Set<Map<String, Integer>> bags = new HashSet<Map<String, Integer>>();
+
+        // If this current word (collection characters) is in the dictionary
+        // add it to the possible ones
+        if(this.dictionary.contains(usedSoFar)){
+            //now add a this bag, and make a new word
+            Map<String,Integer> bag = new HashMap<String,Integer>();
+            bag.put(usedSoFar,1);
+            bags.add(bag);
+
+            // Now for each of the unused letters (those that are possible to use)
+            // loop through them and recursively try them
+            for(int i = 0; i < possibleLetters.length(); ++i)
+            {
+                //gets the current letter we are working on
+                String letter = possibleLetters.substring(i,i+1);
+                String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
+                Set<String> words = getPossible(allTheOtherLetters,usedSoFar + letter);
+                for(String word : words)
+                {
+//                    if(usedSoFar.length())
+                }
+//                bags.addAll(getPossibleBags(allTheOtherLetters, usedSoFar+letter));
+            }
+
+
+
+        }
+
+//        // Now for each of the unused letters (those that are possible to use)
+//        // loop through them and recursively try them
+//        for(int i = 0; i < possibleLetters.length(); ++i)
+//        {
+//            //gets the current letter we are working on
+//            String letter = possibleLetters.substring(i,i+1);
+//            String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
+//            bags.addAll(getPossibleBags(allTheOtherLetters, usedSoFar+letter));
+//        }
+//
+        return bags;
     }
 
 }
