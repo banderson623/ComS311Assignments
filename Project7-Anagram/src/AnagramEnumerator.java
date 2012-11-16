@@ -14,18 +14,22 @@ import java.util.Set;
  * Your submission should include:
  *
  *
- * Note I have used the following sites and articles as refernces some of
- * the techniques I've implimented in this class:
+ * Note I have used the following sites and articles as reference:
+ *
  *  - http://stackoverflow.com/questions/2705504/java-anagram-solver
  *  - http://stackoverflow.com/questions/55210/algorithm-to-generate-anagrams
  *  - http://www.wordsmith.org/anagram/index.html
  *  - http://www.cs.washington.edu/education/courses/cse143/08sp/handouts/23.html
+ *  - https://www.cs.washington.edu/education/courses/143/11wi/homework/6/spec.pdf
+ *  - http://stackoverflow.com/questions/5072985/java-stackoverflowerror-bad-recursive-call
  *
  */
 
 public class AnagramEnumerator implements IAnagramEnumerator {
     //The underlying storage
     protected HashSet<String> dictionary;
+
+    public static String recursingTabs = "";
 
     public AnagramEnumerator(){
         dictionary = new HashSet<String>();
@@ -67,11 +71,21 @@ public class AnagramEnumerator implements IAnagramEnumerator {
     public void initialize(Set<String> dictionary)
     {
         this.dictionary = (HashSet) dictionary;
+        System.out.println("Dictionary Loaded: " + this.dictionary.size());
     }
 
     @Override
     public Set<String> enumerateAnagramsUnderE(String s) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        HashSet<String> possible = (HashSet) getAllAnagramPossibilitiesFromString(s);
+        HashSet<String> goodOnes = new HashSet<String>();
+        for(String word : possible)
+        {
+            if(word.length() == s.length()){
+                goodOnes.add(word);
+            }
+        }
+
+        return goodOnes;
     }
 
     @Override
@@ -82,14 +96,33 @@ public class AnagramEnumerator implements IAnagramEnumerator {
 
 
 
-    protected Set<String> getAllAnagramPossibilitiesFromString(String word)
+    public Set<String> getAllAnagramPossibilitiesFromString(String word)
     {
         HashSet<String> possible = new HashSet<String>();
+        String used = "";
+        possible.addAll(getPossible(word,used));
 
-        for(int i = 0; i < word.length(); i++){
-            for(j = 0)
+        return possible;
+    }
+
+
+    protected Set<String> getPossible(String possibleLetters, String usedSoFar)
+    {
+
+        HashSet<String> possible = new HashSet<String>();
+
+        if(this.dictionary.contains(usedSoFar)){
+//            System.out.println("Adding..." + usedSoFar);
+            possible.add(usedSoFar);
         }
 
+        for(int i = 0; i < possibleLetters.length(); ++i)
+        {
+            //gets the current letter we are working on
+            String letter = possibleLetters.substring(i,i+1);
+            String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
+            possible.addAll(getPossible(allTheOtherLetters, usedSoFar+letter));
+        }
 
         return possible;
     }

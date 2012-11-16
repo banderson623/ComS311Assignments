@@ -12,15 +12,21 @@ public class MainTest {
 
     public static void main(String [ ] args){
         AnagramEnumerator ana = new AnagramEnumerator();
-        Set<String>words = ana.readWordsIntoSetFromFileAt(wordListFile);
-        Iterator<String> it = words.iterator();
 
         ana.initialize(ana.readWordsIntoSetFromFileAt(wordListFile));
+//        Set<String>words = ana.readWordsIntoSetFromFileAt(wordListFile);
+//        Iterator<String> it = words.iterator();
+//        for(int i = 1; i < 5 && it.hasNext(); i++)
+//        {
+//            System.out.println(it.next());
+//        }
 
-        for(int i = 1; i < 5 && it.hasNext(); i++)
-        {
-            System.out.println(it.next());
-        }
+        String toTest = "brian";
+        System.out.println(toTest);
+
+        //System.out.println(ana.getAllAnagramPossibilitiesFromString(toTest));
+
+        System.out.println(ana.enumerateAnagramsUnderE(toTest));
 
     }
 }
