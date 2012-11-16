@@ -1,5 +1,4 @@
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,9 +35,8 @@ public class main {
         tests[3] = 5000;
         tests[4] = 10000;
         tests[5] = 50000;
-        tests[6] = 1000000;
+        tests[6] = 100000;
 //        tests[7] = 1000000;
-
 //        tests[6] = 5000000;
 
         String[] keys = new String[tests.length];
@@ -47,7 +45,6 @@ public class main {
 
         for(int i = 0; i < tests.length; ++i){
             Builders builder = new Builders();
-            Quicksort sorter = new Quicksort();
 
             keys[i] = tests[i]+"";
 
@@ -64,11 +61,16 @@ public class main {
                   linearTimer.stop();
             results.put("linear_" + keys[i],linearTimer.valuesAsStringArray());
 
-            // Sort things
-            pairs = sorter.sort(pairs);
+            // Sort things ------------------------------------
+            Timer sortTimer = new Timer();
+            sortTimer.start();
+            //pairs = sorter.sort(pairs);
+            pairs = lookerUpper.selectionSort(pairs);
+            sortTimer.stop();
+            results.put("sort_" + keys[i],sortTimer.valuesAsStringArray());
 
 
-            // Find things with logn time
+            // Find things with logn time ----------------------------------
             System.out.println("logLookup");
             Timer logNTimer = new Timer();
                   logNTimer.start();
@@ -81,26 +83,21 @@ public class main {
 
 //        System.out.println("Number of Objects, linear_userTime,systemTime, cpuTime, logn_userTime,systemTime,cpuTime");
 
-        System.out.println("Number of Objects, linear_cpuTime, logn_cpuTime");
+        System.out.println("Number of Objects, linear_cpuTime, logn_cpuTime, sort_cpuTime");
 
         for(String k : keys){
 
             System.out.print(k + ",");
 
             String[] linearResults = results.get("linear_"+k);
-
             System.out.print(linearResults[2]+",");
-//            for(int j = 0; j < 3; j++){
-//                System.out.print(linearResults[j] + ",");
-//            }
-
-
 
             String[] logResults = results.get("logn_"+k);
-//            for(int j = 0; j < 2; j++){
-//                System.out.print(logResults[j] + ",");
-//            }
-            System.out.print(logResults[2] + "\n");
+            System.out.print(logResults[2]+",");
+
+            String[] sortResults = results.get("sort_"+k);
+            System.out.print(sortResults[2] + "\n");
+
         }
 
         return;

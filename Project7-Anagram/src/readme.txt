@@ -1,0 +1,1 @@
+A readme.txt file containing a discussion of your algorithm’s pruning strategies and your choice in dictionary data structures. Were your choices successful? How successful? Why do they work or not work? Back up your arguments with data for bonus points!
