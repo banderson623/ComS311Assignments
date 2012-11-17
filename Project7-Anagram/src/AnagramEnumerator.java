@@ -76,22 +76,14 @@ public class AnagramEnumerator implements IAnagramEnumerator {
 
     @Override
     public Set<String> enumerateAnagramsUnderE(String s) {
-        HashSet<String> possible = (HashSet) getPossible(s,"");
-        HashSet<String> goodOnes = new HashSet<String>();
-        for(String word : possible)
-        {
-            // Only use the words of the correct size
-            if(word.length() == s.length()){
-                goodOnes.add(word);
-            }
-        }
-
-        return goodOnes;
+        HashSet<String> possible = (HashSet) getPossible(s,"", s.length());
+        return possible;
     }
 
 
     protected Set<String> getPossible(String possibleLetters,
-                                      String usedSoFar)
+                                      String usedSoFar,
+                                      int desiredLength)
     {
         // This is the collection of possible words
         // (those sets of characters that are in the dictionary)
@@ -99,7 +91,9 @@ public class AnagramEnumerator implements IAnagramEnumerator {
 
         // If this current word (collection characters) is in the dictionary
         // add it to the possible ones
-        if(this.dictionary.contains(usedSoFar)){
+        if(usedSoFar.length() == desiredLength &&
+           this.dictionary.contains(usedSoFar))
+        {
             possible.add(usedSoFar);
         }
 
@@ -110,7 +104,7 @@ public class AnagramEnumerator implements IAnagramEnumerator {
             //gets the current letter we are working on
             String letter = possibleLetters.substring(i,i+1);
             String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
-            possible.addAll(getPossible(allTheOtherLetters, usedSoFar+letter));
+            possible.addAll(getPossible(allTheOtherLetters, usedSoFar+letter,desiredLength));
         }
 
         return possible;
@@ -153,11 +147,11 @@ public class AnagramEnumerator implements IAnagramEnumerator {
                 //gets the current letter we are working on
                 String letter = possibleLetters.substring(i,i+1);
                 String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
-                Set<String> words = getPossible(allTheOtherLetters,usedSoFar + letter);
-                for(String word : words)
-                {
+//                Set<String> words = getPossible(allTheOtherLetters,usedSoFar + letter);
+//                for(String word : words)
+//                {
 //                    if(usedSoFar.length())
-                }
+//                }
 //                bags.addAll(getPossibleBags(allTheOtherLetters, usedSoFar+letter));
             }
 
