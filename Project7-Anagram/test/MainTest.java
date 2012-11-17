@@ -1,4 +1,4 @@
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,10 +15,15 @@ public class MainTest {
 
         ana.initialize(ana.readWordsIntoSetFromFileAt(wordListFile));
 
-        String toTest = "brian"; System.out.println(toTest + " --> " + ana.enumerateAnagramsUnderE(toTest));
+//        String toTest = "brian"; System.out.println(toTest + " --> " + ana.enumerateAnagramsUnderE(toTest));
 
-//        String toTest = "brian";
-//        System.out.println(toTest + " --> " + ana.enumerateAnagramsUnderBagE(toTest));
+        String toTest = "brian";
+        toTest = "situation";
+        Set<Map<String, Integer>> results = ana.enumerateAnagramsUnderBagE(toTest);
+        for(Map<String, Integer> theMap : results){
+            System.out.println(toTest + " --> " + theMap);
+
+        }
 
 
     }

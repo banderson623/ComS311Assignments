@@ -117,16 +117,26 @@ public class AnagramEnumerator implements IAnagramEnumerator {
     @Override
     public Set<Map<String, Integer>> enumerateAnagramsUnderBagE(String inputString) {
         Set<Map<String, Integer>> results = new HashSet<Map<String, Integer>>();
-        results = getPossibleBags(inputString, "", new HashMap<String, Integer>());
-        return results;
+        Set<Map<String, Integer>> goodResults = new HashSet<Map<String, Integer>>();
+        results = getPossibleBags(inputString, "", new HashMap<String, Integer>(), inputString.length());
+        for(Map<String, Integer> theMap : results)
+        {
+            if(lengthOf(theMap) == inputString.length()){
+                goodResults.add(theMap);
+            }
+        }
+        return goodResults;
     }
 
 
 
     protected  Set<Map<String, Integer>> getPossibleBags(String possibleLetters,
                                                          String usedSoFar,
-                                                         Map<String,Integer> currentBag)
+                                                         Map<String,Integer> currentBag,
+                                                         int desiredLength)
     {
+
+
         // This is the collection of possible words
         // (those sets of characters that are in the dictionary)
         HashSet<String> possible = new HashSet<String>();
@@ -138,7 +148,6 @@ public class AnagramEnumerator implements IAnagramEnumerator {
             //now add a this bag, and make a new word
             Map<String,Integer> bag = new HashMap<String,Integer>();
             bag.put(usedSoFar,1);
-            bags.add(bag);
 
             // Now for each of the unused letters (those that are possible to use)
             // loop through them and recursively try them
@@ -147,29 +156,52 @@ public class AnagramEnumerator implements IAnagramEnumerator {
                 //gets the current letter we are working on
                 String letter = possibleLetters.substring(i,i+1);
                 String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
-//                Set<String> words = getPossible(allTheOtherLetters,usedSoFar + letter);
-//                for(String word : words)
-//                {
-//                    if(usedSoFar.length())
-//                }
-//                bags.addAll(getPossibleBags(allTheOtherLetters, usedSoFar+letter));
+                Set<String> words = getPossible(allTheOtherLetters,usedSoFar + letter, desiredLength - usedSoFar.length());
+                for(String word : words)
+                {
+                    bag.put(word,1);
+                }
             }
-
-
+            bags.add(bag);
 
         }
 
-//        // Now for each of the unused letters (those that are possible to use)
-//        // loop through them and recursively try them
-//        for(int i = 0; i < possibleLetters.length(); ++i)
-//        {
-//            //gets the current letter we are working on
-//            String letter = possibleLetters.substring(i,i+1);
-//            String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
-//            bags.addAll(getPossibleBags(allTheOtherLetters, usedSoFar+letter));
-//        }
-//
+
+        // Now for each of the unused letters (those that are possible to use)
+        // loop through them and recursively try them
+        Map<String,Integer> bag = new HashMap<String,Integer>();
+        for(int i = 0; i < possibleLetters.length(); ++i)
+        {
+            //gets the current letter we are working on
+            String letter = possibleLetters.substring(i,i+1);
+            String allTheOtherLetters = possibleLetters.substring(0,i) + possibleLetters.substring(i+1);
+
+            bags.addAll(getPossibleBags(allTheOtherLetters,
+                                        usedSoFar + letter,
+                                        bag,
+                                        desiredLength));
+
+        }
+
         return bags;
+    }
+
+    /**
+     * Get the length of a map
+     *
+     * @param theMap
+     * @return the length of the map(a set of words and their frequency)
+     */
+    protected int lengthOf(Map<String, Integer> theMap)
+    {
+        int count = 0;
+        Set<String> keys = theMap.keySet();
+        for(String word : keys)
+        {
+            count += word.length() * theMap.get(word);
+        }
+
+        return count;
     }
 
 }

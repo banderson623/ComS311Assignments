@@ -10,13 +10,18 @@ On enumerateAnagramsUnderE()
 ==============================
 I am happy with my enumerateAnagramsUnderE() implementation. There isn't much pruning
 happening at this level, though I have only elected to do the dictionary check
-if the string length equivelant to what I am looking for
-
-
+if the string length is the same for what I am looking for
 
 
 On enumerateAnagramsUnderBagE
 ===============================
+I didn't have enough time to optimize this. I basically find all of the anagram sets
+that are less than or equal to the total length. But I didn't find a way to optimize
+this to find the correct size only, so I need to loop through it again and weed
+out the ones that are too small.
+
+Oops.
+
 
 
 
